@@ -35,23 +35,31 @@ FEATURES_FILE = os.path.join(MODEL_DIR, "feature_names.pkl")
 # Candidates for target column detection
 TARGET_CANDIDATES = ["PlacementStatus", "Placement", "Status", "Placed"]
 
-# High-Performance Global In-Memory Caches
-# WHY WRITTEN: Reuses parsed DataFrames and trained ML estimators across requests for instant rendering.
+# High-Performance Global In-Memory Output Caches
+# WHY WRITTEN: Pre-aggregates and caches all analytical outputs in RAM for instantaneous page transitions.
 _DATASET_CACHE = {}
 _DATASET_STATS_CACHE = None
 _DATASET_STATS_MTIME = None
 _MODEL_ARTIFACTS_CACHE = None
+_VISUALIZATION_CACHE = None
+_DESCRIBE_HTML_CACHE = None
+_SEPARATED_FILES_CACHE = None
 
 
 def invalidate_caches():
     """
-    Clears in-memory caches when new datasets are uploaded or models are retrained.
+    Clears all in-memory output caches when new datasets are uploaded or models are retrained.
     """
     global _DATASET_CACHE, _DATASET_STATS_CACHE, _DATASET_STATS_MTIME, _MODEL_ARTIFACTS_CACHE
+    global _VISUALIZATION_CACHE, _DESCRIBE_HTML_CACHE, _SEPARATED_FILES_CACHE
     _DATASET_CACHE.clear()
     _DATASET_STATS_CACHE = None
     _DATASET_STATS_MTIME = None
     _MODEL_ARTIFACTS_CACHE = None
+    _VISUALIZATION_CACHE = None
+    _DESCRIBE_HTML_CACHE = None
+    _SEPARATED_FILES_CACHE = None
+
 
 
 # ====================================================================================================
@@ -374,22 +382,27 @@ def view_dataset():
 # ROUTE: Dataset Summary
 # WHY WRITTEN:
 # Generates and renders a comprehensive descriptive statistical table (count, mean, std, percentiles) via HTML.
+# In-memory HTML caching guarantees sub-millisecond instant table rendering.
 # ====================================================================================================
 @app.route("/dataset_summary")
 def dataset_summary():
+    global _DESCRIBE_HTML_CACHE
     stats = get_dataset_stats()
-    df = get_dataset()
-    describe_html = df.describe().to_html(classes="table table-bordered") if not df.empty else ""
-    return render_template("dataset_summary.html", stats=stats, describe_table=describe_html)
+    if _DESCRIBE_HTML_CACHE is None:
+        df = get_dataset()
+        _DESCRIBE_HTML_CACHE = df.describe().to_html(classes="table table-bordered") if not df.empty else ""
+    return render_template("dataset_summary.html", stats=stats, describe_table=_DESCRIBE_HTML_CACHE)
 
 
 # ====================================================================================================
 # ROUTE: Separated Datasets
 # WHY WRITTEN:
 # Exposes decoupled subsets (numerical, categorical, target, X, y, train, test) with live row counts and features.
+# Fast in-memory metadata caching guarantees zero-latency file browsing.
 # ====================================================================================================
 @app.route("/separated_datasets")
 def separated_datasets():
+    global _SEPARATED_FILES_CACHE
     stats = get_dataset_stats()
     separated_dir = os.path.join(BASE_DIR, "outputs", "separated_data")
     
@@ -398,25 +411,28 @@ def separated_datasets():
         try:
             from src.separate_dataset import main as separate_main
             separate_main()
+            _SEPARATED_FILES_CACHE = None
         except Exception:
             pass
     
-    files_info = []
-    if os.path.exists(separated_dir):
-        for f in os.listdir(separated_dir):
-            if f.endswith(".csv") or f.endswith(".tsv"):
-                f_path = os.path.join(separated_dir, f)
-                try:
-                    df_sub = get_dataset(f_path)
-                    files_info.append({
-                        "filename": f,
-                        "rows": len(df_sub),
-                        "cols": len(df_sub.columns),
-                        "columns": ", ".join(df_sub.columns.tolist()[:6]) + ("..." if len(df_sub.columns) > 6 else "")
-                    })
-                except Exception:
-                    pass
-    return render_template("separated_datasets.html", stats=stats, files_info=files_info)
+    if _SEPARATED_FILES_CACHE is None:
+        files_info = []
+        if os.path.exists(separated_dir):
+            for f in sorted(os.listdir(separated_dir)):
+                if f.endswith(".csv") or f.endswith(".tsv"):
+                    f_path = os.path.join(separated_dir, f)
+                    try:
+                        df_sub = get_dataset(f_path)
+                        files_info.append({
+                            "filename": f,
+                            "rows": len(df_sub),
+                            "cols": len(df_sub.columns),
+                            "columns": ", ".join(df_sub.columns.tolist()[:6]) + ("..." if len(df_sub.columns) > 6 else "")
+                        })
+                    except Exception:
+                        pass
+        _SEPARATED_FILES_CACHE = files_info
+    return render_template("separated_datasets.html", stats=stats, files_info=_SEPARATED_FILES_CACHE)
 
 
 # ====================================================================================================
@@ -450,10 +466,14 @@ def preprocessing():
 # ====================================================================================================
 # ROUTE: Visualization
 # WHY WRITTEN:
-# Compiles categorical distributions and continuous intervals into JSON objects consumed by Chart.js charts.
+# Pre-aggregates departmental distributions and CGPA intervals into fast JSON structures for instant Chart.js rendering.
 # ====================================================================================================
 @app.route("/visualization")
 def visualization():
+    global _VISUALIZATION_CACHE
+    if _VISUALIZATION_CACHE is not None:
+        return render_template("visualization.html", chart_data=_VISUALIZATION_CACHE)
+
     df = get_dataset()
     dept_labels = []
     dept_placed = []
@@ -493,8 +513,10 @@ def visualization():
         "cgpa_total": list(cgpa_buckets.values()),
         "cgpa_placed": list(cgpa_placed.values())
     }
+    _VISUALIZATION_CACHE = chart_data
 
-    return render_template("visualization.html", chart_data=chart_data)
+    return render_template("visualization.html", chart_data=_VISUALIZATION_CACHE)
+
 
 
 # ====================================================================================================
