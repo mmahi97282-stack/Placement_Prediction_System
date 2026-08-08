@@ -930,6 +930,109 @@ footer .tech-tag {
     to { opacity: 1; transform: translateY(0); }
 }
 
+/* --------------------------------------------------
+   SMOOTH DASHBOARD & MICRO-INTERACTION UTILITIES
+-------------------------------------------------- */
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.97) translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes pulseGlow {
+    0%, 100% {
+        box-shadow: 0 0 15px rgba(79, 70, 229, 0.2);
+    }
+    50% {
+        box-shadow: 0 0 25px rgba(6, 182, 212, 0.35);
+    }
+}
+
+.animate-smooth {
+    animation: fadeInScale 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.filter-pills-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.filter-pill {
+    padding: 8px 18px;
+    border-radius: 30px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    user-select: none;
+}
+
+.filter-pill:hover {
+    color: var(--primary);
+    border-color: #c7d2fe;
+    background: var(--primary-light);
+    transform: translateY(-2px);
+}
+
+.filter-pill.active {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: #ffffff;
+    border-color: transparent;
+    box-shadow: 0 4px 14px rgba(79, 70, 229, 0.25);
+    transform: translateY(-2px);
+}
+
+.stat-card {
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    background: #ffffff;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 30px -10px rgba(79, 70, 229, 0.15);
+}
+
+.stat-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    opacity: 0.8;
+}
+
+.chart-box {
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.chart-box:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 28px -8px rgba(0, 0, 0, 0.08);
+}
+
+table tbody tr {
+    transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+table tbody tr:hover {
+    background-color: #f8fafc;
+}
+
 /* Responsive design */
 @media (max-width: 900px) {
     header {

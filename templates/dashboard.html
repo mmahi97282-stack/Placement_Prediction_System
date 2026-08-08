@@ -2,14 +2,15 @@
 
 {#
 ====================================================================================================
-TEMPLATE: dashboard.html (Executive Placement Command Center)
+TEMPLATE: dashboard.html (Smooth Executive Placement Command Center)
 WHY WRITTEN:
-1. Executive-Level Oversight: Provides deans, training officers, and placement directors with an
-   aggregate bird's-eye view of campus recruitment health.
-2. Department Comparison Matrix: Displays student totals, placed volumes, unplaced counts, and hiring rates
-   across engineering branches (CSE, ECE, EEE, Mechanical, Civil).
-3. Salary Compensation Breakdown: Renders an interactive Chart.js pie chart dividing candidates into
-   Tier-1 (8.5+ LPA), Tier-2 (5.5 - 8.5 LPA), Tier-3 (3.8 - 5.5 LPA), and Under-Prep cohorts.
+1. Executive-Level Oversight: Delivers real-time diagnostic visibility across all student cohorts,
+   department placement conversions, and compensation brackets.
+2. Animated Metric Counters: Smoothly animates KPI integers from 0 to actual value on page load.
+3. Interactive Department Filter Pills: Enables instantaneous filtering of branch performance
+   (All Departments, Computing / Tech, Core Engineering) without page reloads.
+4. Animated Chart.js Canvases: Features custom linear gradients, fluid cubic-bezier easing, and
+   responsive tooltips for modern visual excellence.
 ====================================================================================================
 #}
 
@@ -17,110 +18,148 @@ WHY WRITTEN:
 
 {% block content %}
 
-<div class="page">
+<div class="page animate-smooth">
     <div class="page-header">
-        <h1 class="page-title">Executive Placement Dashboard</h1>
-        <p class="page-subtitle">Real-time placement intelligence, department performance trackers, and machine learning deployment analytics.</p>
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+            <div>
+                <h1 class="page-title">Executive Placement Dashboard</h1>
+                <p class="page-subtitle">Real-time placement intelligence, department performance trackers, and machine learning deployment analytics.</p>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <span class="badge-live" style="animation: pulseGlow 2s infinite;">⚡ Live System Stream</span>
+            </div>
+        </div>
     </div>
 
-    <!-- Executive Stats Cards -->
-    <!-- WHY WRITTEN: Delivers high-level KPI benchmarks in 4 responsive cards -->
+    <!-- Executive Stats Cards with Smooth Number Counters -->
+    <!-- WHY WRITTEN: Delivers high-level KPI benchmarks with smooth numeric counting animations -->
     <div class="stats-grid">
         <div class="stat-card">
             <div class="stat-label">Total Student Cohort</div>
-            <div class="stat-value">{{ stats.total_students }}</div>
-            <div class="stat-desc">Enrolled Candidates</div>
+            <div class="stat-value" id="kpi-total">{{ stats.total_students }}</div>
+            <div class="stat-desc">Enrolled Candidates Analyzed</div>
         </div>
 
         <div class="stat-card stat-success">
             <div class="stat-label">Placed Students</div>
-            <div class="stat-value">{{ stats.placed_students }}</div>
-            <div class="stat-desc">{{ stats.placement_percentage }}% Placement Rate</div>
+            <div class="stat-value" id="kpi-placed" style="color: var(--success);">{{ stats.placed_students }}</div>
+            <div class="stat-desc"><span id="kpi-pct">{{ stats.placement_percentage }}</span>% Placement Rate</div>
         </div>
 
         <div class="stat-card stat-warning">
             <div class="stat-label">Unplaced Candidates</div>
-            <div class="stat-value">{{ stats.not_placed }}</div>
-            <div class="stat-desc">Targeted for Training</div>
+            <div class="stat-value" id="kpi-unplaced" style="color: var(--warning);">{{ stats.not_placed }}</div>
+            <div class="stat-desc">Targeted for Skill Upskilling</div>
         </div>
 
         <div class="stat-card stat-accent">
-            <div class="stat-label">Avg CGPA Score</div>
-            <div class="stat-value">{{ stats.avg_cgpa }}</div>
-            <div class="stat-desc">Out of 10.0 scale</div>
+            <div class="stat-label">Average Student CGPA</div>
+            <div class="stat-value" id="kpi-cgpa" style="color: var(--accent);">{{ stats.avg_cgpa }}</div>
+            <div class="stat-desc">Out of 10.0 Academic Scale</div>
+        </div>
+    </div>
+
+    <!-- Interactive Filter Pills -->
+    <!-- WHY WRITTEN: Allows instant client-side switching of department metrics without reloading -->
+    <div style="margin-top: 24px;">
+        <div class="filter-pills-container">
+            <span style="font-size: 13px; font-weight: 700; color: var(--text-muted); margin-right: 6px;">FILTER VIEW:</span>
+            <div class="filter-pill active" onclick="filterDepartmentTable('all', this)">🌐 All Departments</div>
+            <div class="filter-pill" onclick="filterDepartmentTable('tech', this)">💻 Computing & Tech (CSE/ECE)</div>
+            <div class="filter-pill" onclick="filterDepartmentTable('core', this)">⚡ Core Engineering (EEE/Mech/Civil)</div>
         </div>
     </div>
 
     <!-- Dashboard Charts Grid -->
-    <!-- WHY WRITTEN: Dual visual perspectives comparing departmental volumes and compensation tiers -->
+    <!-- WHY WRITTEN: Dual visual perspectives with smooth gradient fills and spring entry transitions -->
     <div class="chart-grid">
         <div class="chart-box">
-            <h3 style="margin-bottom: 16px; font-weight: 700; color: var(--text-dark);">📊 Placement Success by Department</h3>
-            <canvas id="dashDeptChart"></canvas>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h3 style="font-weight: 700; color: var(--text-dark); margin: 0;">📊 Placement Success by Department</h3>
+                <span style="font-size: 12px; color: var(--primary); font-weight: 600;">Real-time</span>
+            </div>
+            <div style="position: relative; height: 280px;">
+                <canvas id="dashDeptChart"></canvas>
+            </div>
         </div>
 
         <div class="chart-box">
-            <h3 style="margin-bottom: 16px; font-weight: 700; color: var(--text-dark);">🎯 Expected Salary Tier Distribution</h3>
-            <canvas id="dashSalaryChart"></canvas>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h3 style="font-weight: 700; color: var(--text-dark); margin: 0;">🎯 Expected Salary Tier Distribution</h3>
+                <span style="font-size: 12px; color: var(--accent); font-weight: 600;">CTC Breakdown</span>
+            </div>
+            <div style="position: relative; height: 280px;">
+                <canvas id="dashSalaryChart"></canvas>
+            </div>
         </div>
     </div>
 
     <!-- Executive Summary Section -->
-    <!-- WHY WRITTEN: Detailed institutional table mapping branches to target corporate job profiles -->
+    <!-- WHY WRITTEN: Detailed institutional table mapping branches to target corporate job profiles with smooth row transitions -->
     <div class="section" style="margin-top: 32px;">
-        <h2 class="section-title">Department Performance Metrics Summary</h2>
+        <div class="page-header" style="margin-bottom: 16px;">
+            <h2 class="section-title">Department Performance & Recruitment Metrics</h2>
+            <p class="page-subtitle">Granular breakdown of enrollment, hiring conversions, and industry role mappings.</p>
+        </div>
+
         <div class="table-container">
-            <table>
+            <table id="deptSummaryTable">
                 <thead>
                     <tr>
                         <th>Department</th>
+                        <th>Category</th>
                         <th>Total Students</th>
                         <th>Placed Count</th>
                         <th>Unplaced Count</th>
                         <th>Placement %</th>
-                        <th>Top Hiring Role Category</th>
+                        <th>Primary Hiring Domain</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
+                    <tr data-category="tech">
                         <td><strong>Computer Science (CSE)</strong></td>
+                        <td><span class="status-badge placed" style="font-size: 11px;">Tech</span></td>
                         <td>800</td>
                         <td>680</td>
                         <td>120</td>
                         <td><span style="color: var(--success); font-weight: 700;">85.0%</span></td>
-                        <td>Software Engineer / AI Dev</td>
+                        <td>Software Engineer / AI Dev / Cloud</td>
                     </tr>
-                    <tr>
+                    <tr data-category="tech">
                         <td><strong>Electronics & Comm (ECE)</strong></td>
+                        <td><span class="status-badge placed" style="font-size: 11px;">Tech</span></td>
                         <td>700</td>
                         <td>520</td>
                         <td>180</td>
                         <td><span style="color: var(--success); font-weight: 700;">74.3%</span></td>
-                        <td>VLSI / Embedded Systems / IT</td>
+                        <td>VLSI / Embedded Systems / IT Services</td>
                     </tr>
-                    <tr>
+                    <tr data-category="core">
                         <td><strong>Electrical & Electronics (EEE)</strong></td>
+                        <td><span class="status-badge not-placed" style="font-size: 11px; background: #e0f2fe; color: #0284c7;">Core</span></td>
                         <td>690</td>
                         <td>480</td>
                         <td>210</td>
                         <td><span style="color: var(--primary); font-weight: 700;">69.6%</span></td>
-                        <td>Core Electrical / Automation</td>
+                        <td>Power Systems / Automation / EV Tech</td>
                     </tr>
-                    <tr>
+                    <tr data-category="core">
                         <td><strong>Mechanical Engineering</strong></td>
+                        <td><span class="status-badge not-placed" style="font-size: 11px; background: #e0f2fe; color: #0284c7;">Core</span></td>
                         <td>680</td>
                         <td>390</td>
                         <td>290</td>
                         <td><span style="color: var(--warning); font-weight: 700;">57.4%</span></td>
-                        <td>CAD/CAM / Production / Operations</td>
+                        <td>CAD/CAM / Robotics / Operations</td>
                     </tr>
-                    <tr>
+                    <tr data-category="core">
                         <td><strong>Civil Engineering</strong></td>
+                        <td><span class="status-badge not-placed" style="font-size: 11px; background: #e0f2fe; color: #0284c7;">Core</span></td>
                         <td>650</td>
                         <td>340</td>
                         <td>310</td>
                         <td><span style="color: var(--warning); font-weight: 700;">52.3%</span></td>
-                        <td>Structural Design / Planning</td>
+                        <td>Structural Design / Smart Cities / BIM</td>
                     </tr>
                 </tbody>
             </table>
@@ -132,43 +171,145 @@ WHY WRITTEN:
 
 {% block scripts %}
 <script>
-    // Client-side Chart.js rendering for departmental bar graph and compensation tier pie chart
-    document.addEventListener("DOMContentLoaded", function () {
-        // Department Bar Chart
-        const ctxDept = document.getElementById('dashDeptChart').getContext('2d');
-        new Chart(ctxDept, {
-            type: 'bar',
-            data: {
-                labels: ['CSE', 'ECE', 'EEE', 'Mechanical', 'Civil'],
-                datasets: [{
-                    label: 'Placed Students',
-                    data: [680, 520, 480, 390, 340],
-                    backgroundColor: '#4f46e5',
-                    borderRadius: 6
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false
-            }
-        });
+    // Smooth Number Counting Animation
+    function animateCounter(id, target, isFloat = false) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const targetVal = parseFloat(target);
+        if (isNaN(targetVal)) return;
 
-        // Salary Tier Doughnut
-        const ctxSalary = document.getElementById('dashSalaryChart').getContext('2d');
-        new Chart(ctxSalary, {
-            type: 'pie',
-            data: {
-                labels: ['Tier 1 (8.5+ LPA)', 'Tier 2 (5.5 - 8.5 LPA)', 'Tier 3 (3.8 - 5.5 LPA)', 'Under Prep'],
-                datasets: [{
-                    data: [420, 980, 1010, 1110],
-                    backgroundColor: ['#10b981', '#06b6d4', '#6366f1', '#ef4444']
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false
+        let current = 0;
+        const duration = 800; // ms
+        const steps = 30;
+        const increment = targetVal / steps;
+        const intervalTime = duration / steps;
+
+        const timer = setInterval(() => {
+            current += increment;
+            if (current >= targetVal) {
+                current = targetVal;
+                clearInterval(timer);
+            }
+            el.innerText = isFloat ? current.toFixed(2) : Math.round(current);
+        }, intervalTime);
+    }
+
+    // Client-Side Interactive Department Filter
+    function filterDepartmentTable(category, element) {
+        document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+        if (element) element.classList.add('active');
+
+        const rows = document.querySelectorAll('#deptSummaryTable tbody tr');
+        rows.forEach(row => {
+            if (category === 'all' || row.getAttribute('data-category') === category) {
+                row.style.display = '';
+                row.style.opacity = '0';
+                setTimeout(() => { row.style.opacity = '1'; }, 50);
+            } else {
+                row.style.display = 'none';
             }
         });
+    }
+
+    // Smooth Chart.js Initializations with Gradients & Cubic-Bezier Animations
+    document.addEventListener("DOMContentLoaded", function () {
+        // Animate KPI numbers smoothly
+        const totalVal = {{ stats.total_students | tojson }};
+        const placedVal = {{ stats.placed_students | tojson }};
+        const unplacedVal = {{ stats.not_placed | tojson }};
+        const cgpaVal = {{ stats.avg_cgpa | tojson }};
+
+        animateCounter('kpi-total', totalVal);
+        animateCounter('kpi-placed', placedVal);
+        animateCounter('kpi-unplaced', unplacedVal);
+        animateCounter('kpi-cgpa', cgpaVal, true);
+
+        // 1. Department Bar Chart with Gradient
+        const canvasDept = document.getElementById('dashDeptChart');
+        if (canvasDept) {
+            const ctxDept = canvasDept.getContext('2d');
+            const gradientDept = ctxDept.createLinearGradient(0, 0, 0, 300);
+            gradientDept.addColorStop(0, '#4f46e5');
+            gradientDept.addColorStop(1, '#06b6d4');
+
+            new Chart(ctxDept, {
+                type: 'bar',
+                data: {
+                    labels: ['CSE', 'ECE', 'EEE', 'Mechanical', 'Civil'],
+                    datasets: [{
+                        label: 'Placed Students',
+                        data: [680, 520, 480, 390, 340],
+                        backgroundColor: gradientDept,
+                        borderRadius: 8,
+                        hoverBackgroundColor: '#4338ca'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: {
+                        duration: 900,
+                        easing: 'easeOutQuart'
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#0f172a',
+                            padding: 10,
+                            cornerRadius: 8
+                        }
+                    },
+                    scales: {
+                        y: {
+                            grid: { color: '#f1f5f9' },
+                            ticks: { font: { family: 'Plus Jakarta Sans', size: 11 } }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { family: 'Plus Jakarta Sans', size: 11, weight: '600' } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 2. Salary Tier Doughnut Chart
+        const canvasSalary = document.getElementById('dashSalaryChart');
+        if (canvasSalary) {
+            const ctxSalary = canvasSalary.getContext('2d');
+            new Chart(ctxSalary, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Tier 1 (8.5+ LPA)', 'Tier 2 (5.5 - 8.5 LPA)', 'Tier 3 (3.8 - 5.5 LPA)', 'Under Prep'],
+                    datasets: [{
+                        data: [420, 980, 1010, 1110],
+                        backgroundColor: ['#10b981', '#06b6d4', '#6366f1', '#ef4444'],
+                        borderWidth: 2,
+                        borderColor: '#ffffff',
+                        hoverOffset: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: {
+                        duration: 1000,
+                        easing: 'easeOutQuart'
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                boxWidth: 12,
+                                font: { family: 'Plus Jakarta Sans', size: 11, weight: '500' },
+                                padding: 14
+                            }
+                        }
+                    },
+                    cutout: '68%'
+                }
+            });
+        }
     });
 </script>
 {% endblock %}
