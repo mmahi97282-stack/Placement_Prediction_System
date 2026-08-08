@@ -47,13 +47,15 @@ WHY WRITTEN:
     --radius-sm: 8px;
     --radius-md: 12px;
     --radius-lg: 18px;
-    --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 body.has-sidebar {
@@ -66,7 +68,9 @@ body.has-sidebar {
     display: flex;
     min-height: 100vh;
     overflow-x: hidden;
+    text-rendering: optimizeLegibility;
 }
+
 
 
 /* --------------------------------------------------
