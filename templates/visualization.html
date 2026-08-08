@@ -2,55 +2,88 @@
 
 {#
 ====================================================================================================
-TEMPLATE: visualization.html (Interactive Data & Chart Analytics)
+TEMPLATE: visualization.html (3D Interactive Data & Chart Analytics)
 WHY WRITTEN:
-1. Multi-Dimensional Visual Analytics: Leverages Chart.js to render 4 distinct graphical perspectives:
-   - Department Placement Bar Chart: Compares Placed vs Not Placed student volume across CSE, ECE, EEE, Mechanical, Civil.
-   - CGPA Tier Distribution Line Chart: Plots overall student frequency vs placement conversion across GPA brackets (<6.0, 6-7, 7-8, 8-9, >9.0).
-   - Skill Profile Radar Chart: Visualizes multidimensional competency balance (CGPA, Aptitude, Communication, Projects, Internship, 12th) comparing placed cohorts against unplaced cohorts.
+1. Multi-Dimensional 3D Visual Analytics: Leverages Chart.js with 3D gyroscopic tilt and lighting physics:
+   - Department Placement Bar Chart: Compares Placed vs Not Placed student volume.
+   - CGPA Tier Distribution Line Chart: Plots overall student frequency vs placement conversion.
+   - Skill Profile Radar Chart: Visualizes multidimensional competency balance.
    - Overall Placement Doughnut Chart: Illustrates total campus placement conversion percentage.
-2. Responsive Chart Grid: Employs CSS grid with minmax() and fixed aspect ratios for flawless mobile & desktop viewing.
+2. 3D Mouse Gyroscope & Parallax: Graphs tilt and rotate dynamically in 3D space with cursor coordinates.
 ====================================================================================================
 #}
 
-{% block title %}Visualization - Placement Prediction System{% endblock %}
+{% block title %}3D Visualization - Placement Prediction System{% endblock %}
 
 {% block content %}
 
-<div class="page">
+<div class="page animate-smooth">
     <div class="page-header">
-        <h1 class="page-title">Interactive Placement Data Visualizations</h1>
-        <p class="page-subtitle">Analyze relationships between academic marks, technical competencies, department choices, and placement recruitment outcomes.</p>
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+            <div>
+                <h1 class="page-title">3D Interactive Data Visualizations</h1>
+                <p class="page-subtitle">Analyze relationships between academic marks, technical competencies, department choices, and placement recruitment outcomes with real-time 3D parallax.</p>
+            </div>
+            <span class="badge-live" style="animation: pulseGlow 2s infinite;">🎮 3D Perspective Enabled</span>
+        </div>
     </div>
 
-    <!-- Charts Grid -->
-    <div class="chart-grid">
+    <!-- 3D Charts Grid -->
+    <div class="chart-grid perspective-container">
         <!-- Chart 1: Department Placement Comparison -->
-        <!-- WHY WRITTEN: Evaluates which academic engineering disciplines achieve the highest hiring ratios -->
-        <div class="chart-box">
-            <h3 style="margin-bottom: 16px; font-weight: 700; color: var(--text-dark);">🏢 Department Placement Breakdown</h3>
-            <canvas id="deptChart"></canvas>
+        <div class="chart-3d-box floating-3d-ambient" data-tilt>
+            <div class="chart-3d-header">
+                <div>
+                    <span style="font-size: 11px; font-weight: 800; color: var(--primary); text-transform: uppercase;">Engineering Branches</span>
+                    <h3 style="font-weight: 800; color: var(--text-dark); margin: 2px 0 0;">🏢 Department Placement Breakdown</h3>
+                </div>
+                <span style="font-size: 11px; background: var(--primary-light); color: var(--primary); font-weight: 700; padding: 4px 10px; border-radius: 20px;">3D Tilt 🎮</span>
+            </div>
+            <div class="chart-3d-canvas-wrap">
+                <canvas id="deptChart"></canvas>
+            </div>
         </div>
 
         <!-- Chart 2: CGPA vs Placement Outcome -->
-        <!-- WHY WRITTEN: Confirms the non-linear relationship between academic grade point average and hiring likelihood -->
-        <div class="chart-box">
-            <h3 style="margin-bottom: 16px; font-weight: 700; color: var(--text-dark);">🎓 CGPA Tier vs Placement Rate</h3>
-            <canvas id="cgpaChart"></canvas>
+        <div class="chart-3d-box floating-3d-ambient" data-tilt style="animation-delay: -2s;">
+            <div class="chart-3d-header">
+                <div>
+                    <span style="font-size: 11px; font-weight: 800; color: var(--accent); text-transform: uppercase;">Grade Metrics</span>
+                    <h3 style="font-weight: 800; color: var(--text-dark); margin: 2px 0 0;">🎓 CGPA Tier vs Placement Rate</h3>
+                </div>
+                <span style="font-size: 11px; background: var(--accent-light); color: var(--accent); font-weight: 700; padding: 4px 10px; border-radius: 20px;">Parallax 📈</span>
+            </div>
+            <div class="chart-3d-canvas-wrap">
+                <canvas id="cgpaChart"></canvas>
+            </div>
         </div>
 
         <!-- Chart 3: Skill Set Impact Radar -->
-        <!-- WHY WRITTEN: Highlights the multi-variate capability gap between successfully recruited vs unplaced candidates -->
-        <div class="chart-box">
-            <h3 style="margin-bottom: 16px; font-weight: 700; color: var(--text-dark);">🎯 Skill Profile Radar (Placed vs Not Placed)</h3>
-            <canvas id="skillRadarChart"></canvas>
+        <div class="chart-3d-box floating-3d-ambient" data-tilt style="animation-delay: -4s;">
+            <div class="chart-3d-header">
+                <div>
+                    <span style="font-size: 11px; font-weight: 800; color: var(--success); text-transform: uppercase;">Multidimensional</span>
+                    <h3 style="font-weight: 800; color: var(--text-dark); margin: 2px 0 0;">🎯 Skill Profile Radar</h3>
+                </div>
+                <span style="font-size: 11px; background: var(--success-bg); color: var(--success); font-weight: 700; padding: 4px 10px; border-radius: 20px;">3D Radar 🌐</span>
+            </div>
+            <div class="chart-3d-canvas-wrap">
+                <canvas id="skillRadarChart"></canvas>
+            </div>
         </div>
 
         <!-- Chart 4: Overall Ratio Doughnut -->
-        <!-- WHY WRITTEN: Displays overall institutional placement conversion ratio in a clean circular doughnut format -->
-        <div class="chart-box">
-            <h3 style="margin-bottom: 16px; font-weight: 700; color: var(--text-dark);">🍩 Placement Success Distribution</h3>
-            <canvas id="ratioChart"></canvas>
+        <div class="chart-3d-box floating-3d-ambient" data-tilt style="animation-delay: -6s;">
+            <div class="chart-3d-header">
+                <div>
+                    <span style="font-size: 11px; font-weight: 800; color: #6366f1; text-transform: uppercase;">Conversion Ratio</span>
+                    <h3 style="font-weight: 800; color: var(--text-dark); margin: 2px 0 0;">🍩 Placement Success Ratio</h3>
+                </div>
+                <span style="font-size: 11px; background: #eef2ff; color: #6366f1; font-weight: 700; padding: 4px 10px; border-radius: 20px;">3D Ring 🍩</span>
+            </div>
+            <div class="chart-3d-canvas-wrap">
+                <canvas id="ratioChart"></canvas>
+            </div>
         </div>
     </div>
 </div>
@@ -59,120 +92,188 @@ WHY WRITTEN:
 
 {% block scripts %}
 <script>
-    // Client-side Chart.js initialization using server-injected JSON chart_data payload
+    // 3D Parallax Tilt Engine for Visualization page
+    function init3DTiltEngine() {
+        const tiltCards = document.querySelectorAll('[data-tilt]');
+
+        tiltCards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+
+                const rotateX = ((y - centerY) / centerY) * -12;
+                const rotateY = ((x - centerX) / centerX) * 12;
+
+                const mouseXPct = (x / rect.width) * 100;
+                const mouseYPct = (y / rect.height) * 100;
+                card.style.setProperty('--mouse-x', `${mouseXPct}%`);
+                card.style.setProperty('--mouse-y', `${mouseYPct}%`);
+
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.03, 1.03, 1.03) translateZ(15px)`;
+                card.classList.remove('floating-3d-ambient');
+            });
+
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1) translateZ(0px)`;
+                card.classList.add('floating-3d-ambient');
+            });
+        });
+    }
+
+    // Client-side Chart.js initialization with 3D styling
     document.addEventListener("DOMContentLoaded", function () {
+        init3DTiltEngine();
         const rawData = {{ chart_data | tojson }};
 
         // 1. Department Placement Comparison Bar Chart
-        const ctxDept = document.getElementById('deptChart').getContext('2d');
-        new Chart(ctxDept, {
-            type: 'bar',
-            data: {
-                labels: rawData.dept_labels.length ? rawData.dept_labels : ['CSE', 'ECE', 'EEE', 'Mechanical', 'Civil'],
-                datasets: [
-                    {
-                        label: 'Placed Students',
-                        data: rawData.dept_placed.length ? rawData.dept_placed : [680, 520, 480, 390, 340],
-                        backgroundColor: '#10b981',
-                        borderRadius: 6
-                    },
-                    {
-                        label: 'Not Placed',
-                        data: rawData.dept_not_placed.length ? rawData.dept_not_placed : [120, 180, 210, 290, 310],
-                        backgroundColor: '#ef4444',
-                        borderRadius: 6
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { position: 'top' } }
-            }
-        });
+        const canvasDept = document.getElementById('deptChart');
+        if (canvasDept) {
+            const ctxDept = canvasDept.getContext('2d');
+            const gradPlaced = ctxDept.createLinearGradient(0, 0, 0, 300);
+            gradPlaced.addColorStop(0, '#10b981');
+            gradPlaced.addColorStop(1, '#059669');
+
+            const gradNotPlaced = ctxDept.createLinearGradient(0, 0, 0, 300);
+            gradNotPlaced.addColorStop(0, '#ef4444');
+            gradNotPlaced.addColorStop(1, '#dc2626');
+
+            new Chart(ctxDept, {
+                type: 'bar',
+                data: {
+                    labels: rawData.dept_labels.length ? rawData.dept_labels : ['CSE', 'ECE', 'EEE', 'Mechanical', 'Civil'],
+                    datasets: [
+                        {
+                            label: 'Placed Students',
+                            data: rawData.dept_placed.length ? rawData.dept_placed : [680, 520, 480, 390, 340],
+                            backgroundColor: gradPlaced,
+                            borderRadius: 8
+                        },
+                        {
+                            label: 'Not Placed',
+                            data: rawData.dept_not_placed.length ? rawData.dept_not_placed : [120, 180, 210, 290, 310],
+                            backgroundColor: gradNotPlaced,
+                            borderRadius: 8
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: { duration: 1000, easing: 'easeOutQuart' },
+                    plugins: { legend: { position: 'top' } }
+                }
+            });
+        }
 
         // 2. CGPA Tier Distribution Line Chart
-        const ctxCgpa = document.getElementById('cgpaChart').getContext('2d');
-        new Chart(ctxCgpa, {
-            type: 'line',
-            data: {
-                labels: rawData.cgpa_labels,
-                datasets: [
-                    {
-                        label: 'Total Candidates',
-                        data: rawData.cgpa_total,
-                        borderColor: '#6366f1',
-                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                        fill: true,
-                        tension: 0.3
-                    },
-                    {
-                        label: 'Placed Candidates',
-                        data: rawData.cgpa_placed,
-                        borderColor: '#06b6d4',
-                        backgroundColor: 'rgba(6, 182, 212, 0.2)',
-                        fill: true,
-                        tension: 0.3
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { position: 'top' } }
-            }
-        });
+        const canvasCgpa = document.getElementById('cgpaChart');
+        if (canvasCgpa) {
+            const ctxCgpa = canvasCgpa.getContext('2d');
+            new Chart(ctxCgpa, {
+                type: 'line',
+                data: {
+                    labels: rawData.cgpa_labels,
+                    datasets: [
+                        {
+                            label: 'Total Candidates',
+                            data: rawData.cgpa_total,
+                            borderColor: '#6366f1',
+                            backgroundColor: 'rgba(99, 102, 241, 0.15)',
+                            fill: true,
+                            tension: 0.35,
+                            borderWidth: 3,
+                            pointRadius: 4,
+                            pointBackgroundColor: '#6366f1'
+                        },
+                        {
+                            label: 'Placed Candidates',
+                            data: rawData.cgpa_placed,
+                            borderColor: '#06b6d4',
+                            backgroundColor: 'rgba(6, 182, 212, 0.25)',
+                            fill: true,
+                            tension: 0.35,
+                            borderWidth: 3,
+                            pointRadius: 4,
+                            pointBackgroundColor: '#06b6d4'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: { duration: 1000, easing: 'easeOutQuart' },
+                    plugins: { legend: { position: 'top' } }
+                }
+            });
+        }
 
         // 3. Multidimensional Skill Radar Chart
-        const ctxRadar = document.getElementById('skillRadarChart').getContext('2d');
-        new Chart(ctxRadar, {
-            type: 'radar',
-            data: {
-                labels: ['CGPA Score', 'Aptitude Score', 'Communication', 'Technical Projects', 'Internship Status', '12th Marks'],
-                datasets: [
-                    {
-                        label: 'Placed Students Average',
-                        data: [85, 82, 80, 75, 90, 84],
-                        backgroundColor: 'rgba(16, 185, 129, 0.2)',
-                        borderColor: '#10b981',
-                        pointBackgroundColor: '#10b981'
-                    },
-                    {
-                        label: 'Not Placed Average',
-                        data: [62, 55, 54, 40, 30, 65],
-                        backgroundColor: 'rgba(239, 68, 68, 0.2)',
-                        borderColor: '#ef4444',
-                        pointBackgroundColor: '#ef4444'
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false
-            }
-        });
+        const canvasRadar = document.getElementById('skillRadarChart');
+        if (canvasRadar) {
+            const ctxRadar = canvasRadar.getContext('2d');
+            new Chart(ctxRadar, {
+                type: 'radar',
+                data: {
+                    labels: ['CGPA Score', 'Aptitude Score', 'Communication', 'Technical Projects', 'Internship Status', '12th Marks'],
+                    datasets: [
+                        {
+                            label: 'Placed Students Average',
+                            data: [85, 82, 80, 75, 90, 84],
+                            backgroundColor: 'rgba(16, 185, 129, 0.25)',
+                            borderColor: '#10b981',
+                            borderWidth: 2,
+                            pointBackgroundColor: '#10b981'
+                        },
+                        {
+                            label: 'Not Placed Average',
+                            data: [62, 55, 54, 40, 30, 65],
+                            backgroundColor: 'rgba(239, 68, 68, 0.25)',
+                            borderColor: '#ef4444',
+                            borderWidth: 2,
+                            pointBackgroundColor: '#ef4444'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: { duration: 1000, easing: 'easeOutQuart' }
+                }
+            });
+        }
 
         // 4. Overall Placement Ratio Doughnut Chart
-        const ctxRatio = document.getElementById('ratioChart').getContext('2d');
-        new Chart(ctxRatio, {
-            type: 'doughnut',
-            data: {
-                labels: ['Placed Students', 'Not Placed'],
-                datasets: [{
-                    data: [
-                        rawData.dept_placed.reduce((a,b)=>a+b, 0) || 2410,
-                        rawData.dept_not_placed.reduce((a,b)=>a+b, 0) || 1110
-                    ],
-                    backgroundColor: ['#10b981', '#ef4444'],
-                    hoverOffset: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { position: 'top' } }
-            }
-        });
+        const canvasRatio = document.getElementById('ratioChart');
+        if (canvasRatio) {
+            const ctxRatio = canvasRatio.getContext('2d');
+            new Chart(ctxRatio, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Placed Students', 'Not Placed'],
+                    datasets: [{
+                        data: [
+                            rawData.dept_placed.reduce((a,b)=>a+b, 0) || 2410,
+                            rawData.dept_not_placed.reduce((a,b)=>a+b, 0) || 1110
+                        ],
+                        backgroundColor: ['#10b981', '#ef4444'],
+                        borderWidth: 3,
+                        borderColor: '#ffffff',
+                        hoverOffset: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: { duration: 1000, easing: 'easeOutQuart' },
+                    plugins: { legend: { position: 'top' } },
+                    cutout: '65%'
+                }
+            });
+        }
     });
 </script>
 {% endblock %}

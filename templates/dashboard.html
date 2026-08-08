@@ -2,19 +2,17 @@
 
 {#
 ====================================================================================================
-TEMPLATE: dashboard.html (Smooth Executive Placement Command Center)
+TEMPLATE: dashboard.html (3D Parallax & Gyroscopic Placement Dashboard)
 WHY WRITTEN:
-1. Executive-Level Oversight: Delivers real-time diagnostic visibility across all student cohorts,
-   department placement conversions, and compensation brackets.
-2. Animated Metric Counters: Smoothly animates KPI integers from 0 to actual value on page load.
-3. Interactive Department Filter Pills: Enables instantaneous filtering of branch performance
-   (All Departments, Computing / Tech, Core Engineering) without page reloads.
-4. Animated Chart.js Canvases: Features custom linear gradients, fluid cubic-bezier easing, and
-   responsive tooltips for modern visual excellence.
+1. Interactive 3D Graphs: Implements real-time 3D mouse parallax tilt (rotateX, rotateY, translateZ)
+   where charts move, float, and react in true 3D perspective to cursor movements.
+2. Dynamic Glare Lighting: Casts a realistic specular radial light gradient moving inversely with cursor angle.
+3. Animated Metric Counters: Smoothly counts up placement KPIs from 0 on page entrance.
+4. Interactive Department Filters: Allows instant filtering across Computing, Core, and All branches.
 ====================================================================================================
 #}
 
-{% block title %}Dashboard - Placement Prediction System{% endblock %}
+{% block title %}3D Executive Dashboard - Placement Prediction System{% endblock %}
 
 {% block content %}
 
@@ -22,37 +20,36 @@ WHY WRITTEN:
     <div class="page-header">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
             <div>
-                <h1 class="page-title">Executive Placement Dashboard</h1>
-                <p class="page-subtitle">Real-time placement intelligence, department performance trackers, and machine learning deployment analytics.</p>
+                <h1 class="page-title">3D Executive Placement Dashboard</h1>
+                <p class="page-subtitle">Real-time placement intelligence, 3D interactive graphs, department performance trackers, and machine learning analytics.</p>
             </div>
-            <div style="display: flex; gap: 10px;">
-                <span class="badge-live" style="animation: pulseGlow 2s infinite;">⚡ Live System Stream</span>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <span class="badge-live" style="animation: pulseGlow 2s infinite;">⚡ 3D Engine Active</span>
             </div>
         </div>
     </div>
 
-    <!-- Executive Stats Cards with Smooth Number Counters -->
-    <!-- WHY WRITTEN: Delivers high-level KPI benchmarks with smooth numeric counting animations -->
-    <div class="stats-grid">
-        <div class="stat-card">
+    <!-- Executive Stats Cards with Smooth Number Counters & 3D Tilt -->
+    <div class="stats-grid perspective-container">
+        <div class="stat-card" data-tilt>
             <div class="stat-label">Total Student Cohort</div>
             <div class="stat-value" id="kpi-total">{{ stats.total_students }}</div>
             <div class="stat-desc">Enrolled Candidates Analyzed</div>
         </div>
 
-        <div class="stat-card stat-success">
+        <div class="stat-card stat-success" data-tilt>
             <div class="stat-label">Placed Students</div>
             <div class="stat-value" id="kpi-placed" style="color: var(--success);">{{ stats.placed_students }}</div>
             <div class="stat-desc"><span id="kpi-pct">{{ stats.placement_percentage }}</span>% Placement Rate</div>
         </div>
 
-        <div class="stat-card stat-warning">
+        <div class="stat-card stat-warning" data-tilt>
             <div class="stat-label">Unplaced Candidates</div>
             <div class="stat-value" id="kpi-unplaced" style="color: var(--warning);">{{ stats.not_placed }}</div>
             <div class="stat-desc">Targeted for Skill Upskilling</div>
         </div>
 
-        <div class="stat-card stat-accent">
+        <div class="stat-card stat-accent" data-tilt>
             <div class="stat-label">Average Student CGPA</div>
             <div class="stat-value" id="kpi-cgpa" style="color: var(--accent);">{{ stats.avg_cgpa }}</div>
             <div class="stat-desc">Out of 10.0 Academic Scale</div>
@@ -60,7 +57,6 @@ WHY WRITTEN:
     </div>
 
     <!-- Interactive Filter Pills -->
-    <!-- WHY WRITTEN: Allows instant client-side switching of department metrics without reloading -->
     <div style="margin-top: 24px;">
         <div class="filter-pills-container">
             <span style="font-size: 13px; font-weight: 700; color: var(--text-muted); margin-right: 6px;">FILTER VIEW:</span>
@@ -70,33 +66,40 @@ WHY WRITTEN:
         </div>
     </div>
 
-    <!-- Dashboard Charts Grid -->
-    <!-- WHY WRITTEN: Dual visual perspectives with smooth gradient fills and spring entry transitions -->
-    <div class="chart-grid">
-        <div class="chart-box">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                <h3 style="font-weight: 700; color: var(--text-dark); margin: 0;">📊 Placement Success by Department</h3>
-                <span style="font-size: 12px; color: var(--primary); font-weight: 600;">Real-time</span>
+    <!-- 3D Interactive Dashboard Charts Grid -->
+    <!-- WHY WRITTEN: 3D perspective container enabling interactive mouse tilt, depth pop, and gyroscopic motion -->
+    <div class="chart-grid perspective-container" style="margin-top: 10px;">
+        <!-- 3D Chart 1: Department Placement Comparison -->
+        <div class="chart-3d-box floating-3d-ambient" id="box-dept" data-tilt>
+            <div class="chart-3d-header">
+                <div>
+                    <span style="font-size: 11px; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 1px;">3D Interactive Analysis</span>
+                    <h3 style="font-weight: 800; color: var(--text-dark); margin: 2px 0 0;">📊 Placement by Department</h3>
+                </div>
+                <span style="font-size: 11px; background: var(--primary-light); color: var(--primary); font-weight: 700; padding: 4px 10px; border-radius: 20px;">Move Mouse in 3D 🎮</span>
             </div>
-            <div style="position: relative; height: 280px;">
+            <div class="chart-3d-canvas-wrap">
                 <canvas id="dashDeptChart"></canvas>
             </div>
         </div>
 
-        <div class="chart-box">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                <h3 style="font-weight: 700; color: var(--text-dark); margin: 0;">🎯 Expected Salary Tier Distribution</h3>
-                <span style="font-size: 12px; color: var(--accent); font-weight: 600;">CTC Breakdown</span>
+        <!-- 3D Chart 2: Expected Salary Tier Doughnut -->
+        <div class="chart-3d-box floating-3d-ambient" id="box-salary" data-tilt style="animation-delay: -3.5s;">
+            <div class="chart-3d-header">
+                <div>
+                    <span style="font-size: 11px; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 1px;">Compensation Matrix</span>
+                    <h3 style="font-weight: 800; color: var(--text-dark); margin: 2px 0 0;">🎯 Salary Tier Distribution</h3>
+                </div>
+                <span style="font-size: 11px; background: var(--accent-light); color: var(--accent); font-weight: 700; padding: 4px 10px; border-radius: 20px;">3D Depth 🌐</span>
             </div>
-            <div style="position: relative; height: 280px;">
+            <div class="chart-3d-canvas-wrap">
                 <canvas id="dashSalaryChart"></canvas>
             </div>
         </div>
     </div>
 
-    <!-- Executive Summary Section -->
-    <!-- WHY WRITTEN: Detailed institutional table mapping branches to target corporate job profiles with smooth row transitions -->
-    <div class="section" style="margin-top: 32px;">
+    <!-- Department Summary Table -->
+    <div class="section" style="margin-top: 36px;">
         <div class="page-header" style="margin-bottom: 16px;">
             <h2 class="section-title">Department Performance & Recruitment Metrics</h2>
             <p class="page-subtitle">Granular breakdown of enrollment, hiring conversions, and industry role mappings.</p>
@@ -179,7 +182,7 @@ WHY WRITTEN:
         if (isNaN(targetVal)) return;
 
         let current = 0;
-        const duration = 800; // ms
+        const duration = 800;
         const steps = 30;
         const increment = targetVal / steps;
         const intervalTime = duration / steps;
@@ -194,7 +197,7 @@ WHY WRITTEN:
         }, intervalTime);
     }
 
-    // Client-Side Interactive Department Filter
+    // Interactive Department Filter
     function filterDepartmentTable(category, element) {
         document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
         if (element) element.classList.add('active');
@@ -211,8 +214,49 @@ WHY WRITTEN:
         });
     }
 
-    // Smooth Chart.js Initializations with Gradients & Cubic-Bezier Animations
+    // --------------------------------------------------------------------------------
+    // 3D PARALLAX & GYROSCOPIC MOUSE TILT ENGINE
+    // WHY WRITTEN: Tracks mouse coordinates across cards and transforms rotateX & rotateY in real 3D space
+    // --------------------------------------------------------------------------------
+    function init3DTiltEngine() {
+        const tiltCards = document.querySelectorAll('[data-tilt]');
+
+        tiltCards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left; // x position within the element.
+                const y = e.clientY - rect.top;  // y position within the element.
+
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+
+                // Calculate tilt angles (-14deg to +14deg)
+                const rotateX = ((y - centerY) / centerY) * -12;
+                const rotateY = ((x - centerX) / centerX) * 12;
+
+                // Pass mouse coordinates to CSS radial gradient glare
+                const mouseXPct = (x / rect.width) * 100;
+                const mouseYPct = (y / rect.height) * 100;
+                card.style.setProperty('--mouse-x', `${mouseXPct}%`);
+                card.style.setProperty('--mouse-y', `${mouseYPct}%`);
+
+                // Apply 3D perspective transformation
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.03, 1.03, 1.03) translateZ(15px)`;
+                card.classList.remove('floating-3d-ambient');
+            });
+
+            card.addEventListener('mouseleave', () => {
+                // Smoothly spring back to neutral 3D floating state
+                card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1) translateZ(0px)`;
+                card.classList.add('floating-3d-ambient');
+            });
+        });
+    }
+
+    // Initialize 3D Chart.js Visualizations
     document.addEventListener("DOMContentLoaded", function () {
+        init3DTiltEngine();
+
         // Animate KPI numbers smoothly
         const totalVal = {{ stats.total_students | tojson }};
         const placedVal = {{ stats.placed_students | tojson }};
@@ -224,12 +268,13 @@ WHY WRITTEN:
         animateCounter('kpi-unplaced', unplacedVal);
         animateCounter('kpi-cgpa', cgpaVal, true);
 
-        // 1. Department Bar Chart with Gradient
+        // 1. Department 3D Bar Chart with Gradients
         const canvasDept = document.getElementById('dashDeptChart');
         if (canvasDept) {
             const ctxDept = canvasDept.getContext('2d');
             const gradientDept = ctxDept.createLinearGradient(0, 0, 0, 300);
             gradientDept.addColorStop(0, '#4f46e5');
+            gradientDept.addColorStop(0.5, '#6366f1');
             gradientDept.addColorStop(1, '#06b6d4');
 
             new Chart(ctxDept, {
@@ -240,53 +285,9 @@ WHY WRITTEN:
                         label: 'Placed Students',
                         data: [680, 520, 480, 390, 340],
                         backgroundColor: gradientDept,
-                        borderRadius: 8,
+                        borderRadius: 10,
+                        borderSkipped: false,
                         hoverBackgroundColor: '#4338ca'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    animation: {
-                        duration: 900,
-                        easing: 'easeOutQuart'
-                    },
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            backgroundColor: '#0f172a',
-                            padding: 10,
-                            cornerRadius: 8
-                        }
-                    },
-                    scales: {
-                        y: {
-                            grid: { color: '#f1f5f9' },
-                            ticks: { font: { family: 'Plus Jakarta Sans', size: 11 } }
-                        },
-                        x: {
-                            grid: { display: false },
-                            ticks: { font: { family: 'Plus Jakarta Sans', size: 11, weight: '600' } }
-                        }
-                    }
-                }
-            });
-        }
-
-        // 2. Salary Tier Doughnut Chart
-        const canvasSalary = document.getElementById('dashSalaryChart');
-        if (canvasSalary) {
-            const ctxSalary = canvasSalary.getContext('2d');
-            new Chart(ctxSalary, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Tier 1 (8.5+ LPA)', 'Tier 2 (5.5 - 8.5 LPA)', 'Tier 3 (3.8 - 5.5 LPA)', 'Under Prep'],
-                    datasets: [{
-                        data: [420, 980, 1010, 1110],
-                        backgroundColor: ['#10b981', '#06b6d4', '#6366f1', '#ef4444'],
-                        borderWidth: 2,
-                        borderColor: '#ffffff',
-                        hoverOffset: 6
                     }]
                 },
                 options: {
@@ -297,16 +298,62 @@ WHY WRITTEN:
                         easing: 'easeOutQuart'
                     },
                     plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#0f172a',
+                            padding: 12,
+                            cornerRadius: 10,
+                            titleFont: { family: 'Plus Jakarta Sans', weight: '700' }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            grid: { color: '#f1f5f9' },
+                            ticks: { font: { family: 'Plus Jakarta Sans', size: 11 } }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { family: 'Plus Jakarta Sans', size: 11, weight: '700' } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 2. 3D Salary Tier Doughnut Chart
+        const canvasSalary = document.getElementById('dashSalaryChart');
+        if (canvasSalary) {
+            const ctxSalary = canvasSalary.getContext('2d');
+            new Chart(ctxSalary, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Tier 1 (8.5+ LPA)', 'Tier 2 (5.5 - 8.5 LPA)', 'Tier 3 (3.8 - 5.5 LPA)', 'Under Prep'],
+                    datasets: [{
+                        data: [420, 980, 1010, 1110],
+                        backgroundColor: ['#10b981', '#06b6d4', '#6366f1', '#ef4444'],
+                        borderWidth: 3,
+                        borderColor: '#ffffff',
+                        hoverOffset: 12
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: {
+                        duration: 1100,
+                        easing: 'easeOutQuart'
+                    },
+                    plugins: {
                         legend: {
                             position: 'bottom',
                             labels: {
                                 boxWidth: 12,
-                                font: { family: 'Plus Jakarta Sans', size: 11, weight: '500' },
+                                font: { family: 'Plus Jakarta Sans', size: 11, weight: '600' },
                                 padding: 14
                             }
                         }
                     },
-                    cutout: '68%'
+                    cutout: '66%'
                 }
             });
         }
