@@ -2,16 +2,12 @@
 
 {#
 ====================================================================================================
-TEMPLATE: home.html (Landing Page & Executive Hub)
+TEMPLATE: home.html (Animated Landing Page & Executive Hub)
 WHY WRITTEN:
-1. First Impression & Onboarding: Serves as the primary entry portal introducing users to the AI
-   placement prediction platform with immediate call-to-actions (Predict, Dashboard).
-2. Real-Time High-Level KPIs: Dynamically displays aggregate statistics (total student records,
-   placement rate, average CGPA, aptitude scores) computed directly from the live dataset.
-3. Feature Discovery Grid: Provides direct jump links to all six system modules: Dataset Explorer,
-   Preprocessing, Visual Analytics, Model Evaluation, Instant Prediction, and Analytics Reports.
-4. Process Flow Visualization: Showcases the 5-stage Machine Learning lifecycle from raw ingestion
-   to salary guidance and recommendation generation.
+1. Animated Hero Presentation: Showcases floating badge, dynamic gradient CTA buttons, and ambient glow.
+2. Real-Time High-Level KPIs: Dynamically displays aggregate statistics with smooth hover micro-lifts.
+3. Feature Discovery Grid: Provides direct jump links to all system modules with smooth card elevation.
+4. Animated Process Flow: Highlights the 5-stage Machine Learning lifecycle with interactive step hops.
 ====================================================================================================
 #}
 
@@ -19,30 +15,30 @@ WHY WRITTEN:
 
 {% block content %}
 
-<!-- Hero Banner Section -->
-<!-- WHY WRITTEN: Communicates platform value proposition with prominent interactive CTA buttons -->
-<section class="hero">
+<!-- Animated Hero Banner Section -->
+<section class="hero animate-smooth">
     <div class="hero-content">
-        <div class="hero-badge">⚡ AI & Machine Learning Powered</div>
-        <h1>University Placement Prediction System</h1>
+        <div class="hero-badge live-shimmer">⚡ AI & Machine Learning Neural Pipeline</div>
+        <h1 style="background: linear-gradient(135deg, #ffffff 30%, #a5b4fc 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+            University Placement Prediction System
+        </h1>
         <p>
             An advanced machine learning analytics platform that evaluates academic performance, technical expertise, soft skills, and internship background to accurately predict placement probability and career outcomes.
         </p>
 
         <div class="hero-buttons">
-            <a href="{{ url_for('prediction') }}" class="btn btn-lg">
-                🎯 Predict Student Placement
+            <a href="{{ url_for('prediction') }}" class="btn btn-lg" style="box-shadow: 0 10px 25px rgba(79, 70, 229, 0.4);">
+                🎯 Launch Placement Predictor
             </a>
-            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary btn-lg">
-                📊 Placement Dashboard
+            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary btn-lg" style="box-shadow: 0 10px 25px rgba(6, 182, 212, 0.3);">
+                🎛️ 3D Executive Dashboard
             </a>
         </div>
     </div>
 </section>
 
 <!-- Quick KPI Metrics Bar -->
-<!-- WHY WRITTEN: Gives career officers and academic heads an instant high-level diagnostic of student readiness -->
-<div class="page" style="padding-bottom: 0;">
+<div class="page animate-smooth" style="padding-bottom: 0;">
     <div class="stats-grid">
         <div class="stat-card">
             <div class="stat-label">Total Student Records</div>
@@ -52,29 +48,28 @@ WHY WRITTEN:
 
         <div class="stat-card stat-success">
             <div class="stat-label">Placed Rate</div>
-            <div class="stat-value">{{ stats.placement_percentage }}%</div>
+            <div class="stat-value" style="color: var(--success);">{{ stats.placement_percentage }}%</div>
             <div class="stat-desc">{{ stats.placed_students }} students placed</div>
         </div>
 
         <div class="stat-card stat-accent">
             <div class="stat-label">Average CGPA</div>
-            <div class="stat-value">{{ stats.avg_cgpa }}</div>
+            <div class="stat-value" style="color: var(--accent);">{{ stats.avg_cgpa }}</div>
             <div class="stat-desc">Across all departments</div>
         </div>
 
         <div class="stat-card stat-warning">
             <div class="stat-label">Avg Aptitude Score</div>
-            <div class="stat-value">{{ stats.avg_aptitude }}/100</div>
+            <div class="stat-value" style="color: var(--warning);">{{ stats.avg_aptitude }}/100</div>
             <div class="stat-desc">Quantitative skill metric</div>
         </div>
     </div>
 
-    <!-- Key Modules Grid -->
-    <!-- WHY WRITTEN: Direct card links to all internal pipeline pages -->
-    <div class="section">
+    <!-- Key Modules Grid with Smooth Card Elevation -->
+    <div class="section" style="margin-top: 36px;">
         <div class="page-header">
             <h2 class="page-title">Explore System Capabilities</h2>
-            <p class="page-subtitle">Access data management, model training, visualization dashboards, and instant placement prediction.</p>
+            <p class="page-subtitle">Access data management, model training, 3D visualization dashboards, and instant placement prediction.</p>
         </div>
 
         <div class="cards">
@@ -98,10 +93,10 @@ WHY WRITTEN:
 
             <div class="card">
                 <div class="card-icon">📈</div>
-                <h3>Visual Analytics</h3>
-                <p>Interactive Chart.js visualizations comparing placement rates across departments, CGPA tiers, and skills.</p>
+                <h3>3D Visual Analytics</h3>
+                <p>Interactive 3D Chart.js visualizations with mouse parallax comparing placement rates across departments and GPA.</p>
                 <div class="card-footer">
-                    <a href="{{ url_for('visualization') }}" class="btn btn-sm btn-outline">View Charts &rarr;</a>
+                    <a href="{{ url_for('visualization') }}" class="btn btn-sm btn-outline">View 3D Charts &rarr;</a>
                 </div>
             </div>
 
@@ -135,8 +130,7 @@ WHY WRITTEN:
     </div>
 
     <!-- Interactive Workflow Section -->
-    <!-- WHY WRITTEN: Visualizes the end-to-end multi-step data science lifecycle -->
-    <div class="section">
+    <div class="section" style="margin-top: 36px;">
         <div class="page-header">
             <h2 class="page-title">Machine Learning Workflow</h2>
             <p class="page-subtitle">End-to-end data pipeline from raw student records to actionable career intelligence.</p>
@@ -144,15 +138,15 @@ WHY WRITTEN:
 
         <div class="workflow-box">
             <div class="flow-container">
-                <div class="flow-step">1. Data Ingestion</div>
+                <div class="flow-step" style="transition: transform 0.2s;">1. Data Ingestion</div>
                 <div class="flow-arrow">&rarr;</div>
-                <div class="flow-step">2. Preprocessing & Encoding</div>
+                <div class="flow-step" style="transition: transform 0.2s;">2. Preprocessing & Encoding</div>
                 <div class="flow-arrow">&rarr;</div>
-                <div class="flow-step">3. Feature Scaling</div>
+                <div class="flow-step" style="transition: transform 0.2s;">3. Feature Scaling</div>
                 <div class="flow-arrow">&rarr;</div>
-                <div class="flow-step">4. Model Training</div>
+                <div class="flow-step" style="transition: transform 0.2s;">4. Model Training</div>
                 <div class="flow-arrow">&rarr;</div>
-                <div class="flow-step">5. Inference & Salary Guidance</div>
+                <div class="flow-step" style="transition: transform 0.2s;">5. Inference & Salary Guidance</div>
             </div>
         </div>
     </div>

@@ -1103,6 +1103,84 @@ footer .tech-tag {
 }
 
 
+/* --------------------------------------------------
+   ADVANCED ANIMATION & HOLOGRAPHIC SUITE
+-------------------------------------------------- */
+@keyframes shimmerWave {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+@keyframes logoBounce {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-4px) rotate(4deg) scale(1.08); }
+}
+
+@keyframes rippleEffect {
+    0% { transform: scale(0); opacity: 0.6; }
+    100% { transform: scale(3.5); opacity: 0; }
+}
+
+@keyframes pulseBorder {
+    0%, 100% { border-color: rgba(79, 70, 229, 0.3); }
+    50% { border-color: rgba(6, 182, 212, 0.8); }
+}
+
+.logo-animated {
+    display: inline-block;
+    animation: logoBounce 3.5s ease-in-out infinite;
+}
+
+.live-shimmer {
+    background: linear-gradient(90deg, #4f46e5, #06b6d4, #10b981, #4f46e5);
+    background-size: 300% 100%;
+    animation: shimmerWave 4s linear infinite;
+    color: #ffffff !important;
+    font-weight: 700;
+}
+
+.pulse-animated {
+    animation: pulseGlow 1.8s infinite;
+}
+
+.click-ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.45);
+    width: 60px;
+    height: 60px;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    animation: rippleEffect 0.6s ease-out forwards;
+}
+
+.card {
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px) scale(1.01);
+    box-shadow: 0 20px 35px -10px rgba(79, 70, 229, 0.18);
+    border-color: #c7d2fe;
+}
+
+.btn {
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 10px 22px -5px rgba(79, 70, 229, 0.35);
+}
+
+.btn:active {
+    transform: translateY(0) scale(0.98);
+}
+
 table tbody tr {
     transition: background-color 0.15s ease, transform 0.15s ease;
 }
