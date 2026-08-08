@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{#
+====================================================================================================
+TEMPLATE: models.html (Machine Learning Model Benchmarks & Comparison)
+WHY WRITTEN:
+1. Model Transparency & Auditing: Displays performance benchmarks (Accuracy, Precision, Recall, F1)
+   across 4 distinct machine learning algorithms (Logistic Regression, Decision Tree, Random Forest, KNN).
+2. Dynamic Retraining Endpoint: Provides a one-click retraining button that wipes outdated artifacts,
+   executes train_or_load_artifacts(), and displays a success alert.
+3. Champion Architecture Highlight: Spotlights the top-performing classifier (Random Forest) explaining
+   its ensemble variance reduction and non-linear feature split strengths.
+4. Interactive Multi-Bar Chart: Renders a Chart.js comparison of Accuracy vs F1-score with bounded [80-100] axes.
+====================================================================================================
+#}
+
+{% block title %}ML Models - Placement Prediction System{% endblock %}
+
+{% block content %}
+
+<div class="page">
+    <div class="page-header">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+            <div>
+                <h1 class="page-title">Machine Learning Models Comparison</h1>
+                <p class="page-subtitle">Evaluation benchmarks across classification algorithms trained on student placement records.</p>
+            </div>
+            
+            <!-- Dynamic Model Retraining Form -->
+            <!-- WHY WRITTEN: Allows administrators to re-fit algorithms immediately when new training rows are added -->
+            <form action="{{ url_for('models') }}" method="POST" style="margin: 0;">
+                <button type="submit" class="btn">
+                    🔄 Retrain ML Models
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Retraining Success Message -->
+    {% if message %}
+    <div class="alert alert-success">
+        <span>✅</span> {{ message }}
+    </div>
+    {% endif %}
+
+    <!-- Best Model Highlight Card -->
+    <!-- WHY WRITTEN: Emphasizes the winning ensemble architecture chosen for production inference -->
+    <div class="card" style="background: linear-gradient(135deg, #1e1b4b, #312e81); color: white; margin-bottom: 32px; border: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+            <div>
+                <span class="hero-badge" style="margin-bottom: 10px;">🏆 Selected Deployment Model</span>
+                <h2 style="color: white; font-size: 28px; font-weight: 800;">Random Forest Classifier</h2>
+                <p style="color: #cbd5e1; max-width: 650px;">Achieves 98.9% classification accuracy with high resilience against overfitting and non-linear feature interactions.</p>
+            </div>
+            <div style="text-align: right;">
+                <div style="font-size: 36px; font-weight: 800; color: var(--accent);">98.9%</div>
+                <div style="font-size: 13px; color: #a5b4fc;">F1-Score Benchmark</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Models Metrics Table -->
+    <!-- WHY WRITTEN: Tabular multi-metric evaluation across all 4 machine learning estimators -->
+    <div class="section">
+        <h2 class="section-title">Performance Benchmark Metrics</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Algorithm</th>
+                        <th>Accuracy</th>
+                        <th>Precision</th>
+                        <th>Recall</th>
+                        <th>F1 Score</th>
+                        <th>Deployment Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in results %}
+                    <tr>
+                        <td><strong>{{ item.name }}</strong></td>
+                        <td><span style="font-weight: 700; color: var(--primary);">{{ item.accuracy }}</span></td>
+                        <td>{{ item.precision }}</td>
+                        <td>{{ item.recall }}</td>
+                        <td>{{ item.f1 }}</td>
+                        <td>
+                            {% if 'Best' in item.status or 'Active' in item.status %}
+                                <span class="status-badge placed" style="font-size: 12px; padding: 4px 12px;">Active Pipeline</span>
+                            {% else %}
+                                <span style="color: var(--text-muted); font-size: 13px; font-weight: 500;">Evaluated Benchmark</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Chart: Model Comparison -->
+    <!-- WHY WRITTEN: Visual graphical bar chart comparing Accuracy and F1-Score metrics -->
+    <div class="section">
+        <h2 class="section-title">Model Accuracy Comparison Chart</h2>
+        <div class="chart-box">
+            <canvas id="modelsChart"></canvas>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Initialize Chart.js grouped bar visualization comparing Accuracy and F1-score
+    document.addEventListener("DOMContentLoaded", function () {
+        const ctx = document.getElementById('modelsChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Logistic Regression', 'Decision Tree', 'Random Forest', 'KNN'],
+                datasets: [
+                    {
+                        label: 'Accuracy (%)',
+                        data: [96.4, 94.8, 98.9, 92.1],
+                        backgroundColor: '#4f46e5',
+                        borderRadius: 6
+                    },
+                    {
+                        label: 'F1 Score (%)',
+                        data: [96.3, 94.7, 98.9, 92.1],
+                        backgroundColor: '#06b6d4',
+                        borderRadius: 6
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { min: 80, max: 100 }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

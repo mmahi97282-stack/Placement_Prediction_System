@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{#
+====================================================================================================
+TEMPLATE: contact.html (Contact & Technical Support Portal)
+WHY WRITTEN:
+1. User Inquiries & Support: Provides students, recruiters, and placement officers with a direct contact
+   form to submit feedback, report prediction discrepancies, or request dataset assistance.
+2. Flash Message Feedback: Consumes Flask's get_flashed_messages() to provide clean acknowledgment alerts.
+3. Institutional Contact Metadata: Lists department email addresses, tech engine specs, and lab details.
+====================================================================================================
+#}
+
+{% block title %}Contact - Placement Prediction System{% endblock %}
+
+{% block content %}
+
+<div class="page">
+    <div class="page-header">
+        <h1 class="page-title">Contact Placement System Team</h1>
+        <p class="page-subtitle">Have questions regarding machine learning predictions, placement statistics, or technical support? Send us a message.</p>
+    </div>
+
+    <!-- Flash Feedback Container -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">
+            <span>📩</span> {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <!-- Contact Form Container -->
+    <!-- WHY WRITTEN: Clean POST form handling name, email, and multiline inquiry -->
+    <div class="form-container" style="max-width: 750px;">
+        <form method="POST" action="{{ url_for('contact') }}">
+            <div class="form-group">
+                <label for="name">Your Full Name</label>
+                <input type="text" id="name" name="name" class="form-control" placeholder="Enter your name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" class="form-control" placeholder="Enter your email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="message">Your Query / Feedback</label>
+                <textarea id="message" name="message" class="form-control" rows="5" placeholder="Write your message here..." required></textarea>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <button type="submit" class="btn btn-lg" style="width: 100%;">
+                    ✉️ Submit Message
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Contact Info Cards -->
+    <div class="cards" style="margin-top: 40px;">
+        <div class="card">
+            <h3>🏢 Institution Support</h3>
+            <p>Placement Cell & Training Officer Queries: placement.office@university.edu</p>
+        </div>
+
+        <div class="card">
+            <h3>⚡ Technical Engine</h3>
+            <p>Python 3.10 • Flask • Scikit-Learn • Pandas • Chart.js</p>
+        </div>
+
+        <div class="card">
+            <h3>📍 Location</h3>
+            <p>Campus Analytics & AI Lab, Department of Computer Science</p>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

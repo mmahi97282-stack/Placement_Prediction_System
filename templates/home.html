@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{#
+====================================================================================================
+TEMPLATE: home.html (Landing Page & Executive Hub)
+WHY WRITTEN:
+1. First Impression & Onboarding: Serves as the primary entry portal introducing users to the AI
+   placement prediction platform with immediate call-to-actions (Predict, Dashboard).
+2. Real-Time High-Level KPIs: Dynamically displays aggregate statistics (total student records,
+   placement rate, average CGPA, aptitude scores) computed directly from the live dataset.
+3. Feature Discovery Grid: Provides direct jump links to all six system modules: Dataset Explorer,
+   Preprocessing, Visual Analytics, Model Evaluation, Instant Prediction, and Analytics Reports.
+4. Process Flow Visualization: Showcases the 5-stage Machine Learning lifecycle from raw ingestion
+   to salary guidance and recommendation generation.
+====================================================================================================
+#}
+
+{% block title %}Home - Placement Prediction System{% endblock %}
+
+{% block content %}
+
+<!-- Hero Banner Section -->
+<!-- WHY WRITTEN: Communicates platform value proposition with prominent interactive CTA buttons -->
+<section class="hero">
+    <div class="hero-content">
+        <div class="hero-badge">⚡ AI & Machine Learning Powered</div>
+        <h1>University Placement Prediction System</h1>
+        <p>
+            An advanced machine learning analytics platform that evaluates academic performance, technical expertise, soft skills, and internship background to accurately predict placement probability and career outcomes.
+        </p>
+
+        <div class="hero-buttons">
+            <a href="{{ url_for('prediction') }}" class="btn btn-lg">
+                🎯 Predict Student Placement
+            </a>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary btn-lg">
+                📊 Placement Dashboard
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Quick KPI Metrics Bar -->
+<!-- WHY WRITTEN: Gives career officers and academic heads an instant high-level diagnostic of student readiness -->
+<div class="page" style="padding-bottom: 0;">
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-label">Total Student Records</div>
+            <div class="stat-value">{{ stats.total_students }}</div>
+            <div class="stat-desc">Dataset size analyzed</div>
+        </div>
+
+        <div class="stat-card stat-success">
+            <div class="stat-label">Placed Rate</div>
+            <div class="stat-value">{{ stats.placement_percentage }}%</div>
+            <div class="stat-desc">{{ stats.placed_students }} students placed</div>
+        </div>
+
+        <div class="stat-card stat-accent">
+            <div class="stat-label">Average CGPA</div>
+            <div class="stat-value">{{ stats.avg_cgpa }}</div>
+            <div class="stat-desc">Across all departments</div>
+        </div>
+
+        <div class="stat-card stat-warning">
+            <div class="stat-label">Avg Aptitude Score</div>
+            <div class="stat-value">{{ stats.avg_aptitude }}/100</div>
+            <div class="stat-desc">Quantitative skill metric</div>
+        </div>
+    </div>
+
+    <!-- Key Modules Grid -->
+    <!-- WHY WRITTEN: Direct card links to all internal pipeline pages -->
+    <div class="section">
+        <div class="page-header">
+            <h2 class="page-title">Explore System Capabilities</h2>
+            <p class="page-subtitle">Access data management, model training, visualization dashboards, and instant placement prediction.</p>
+        </div>
+
+        <div class="cards">
+            <div class="card">
+                <div class="card-icon">📂</div>
+                <h3>Dataset Explorer</h3>
+                <p>Browse, upload, clean, and inspect student academic and skill attributes with real-time missing value detection.</p>
+                <div class="card-footer">
+                    <a href="{{ url_for('dataset') }}" class="btn btn-sm btn-outline">Explore Dataset &rarr;</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">⚙️</div>
+                <h3>Data Preprocessing</h3>
+                <p>Execute categorical encoding (One-Hot, Target, Label), handle missing data, and normalize numerical features.</p>
+                <div class="card-footer">
+                    <a href="{{ url_for('preprocessing') }}" class="btn btn-sm btn-outline">View Pipeline &rarr;</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">📈</div>
+                <h3>Visual Analytics</h3>
+                <p>Interactive Chart.js visualizations comparing placement rates across departments, CGPA tiers, and skills.</p>
+                <div class="card-footer">
+                    <a href="{{ url_for('visualization') }}" class="btn btn-sm btn-outline">View Charts &rarr;</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🤖</div>
+                <h3>ML Model Evaluation</h3>
+                <p>Compare performance metrics across Logistic Regression, Decision Trees, Random Forest, and KNN classifiers.</p>
+                <div class="card-footer">
+                    <a href="{{ url_for('models') }}" class="btn btn-sm btn-outline">Compare Models &rarr;</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🎯</div>
+                <h3>Instant Prediction</h3>
+                <p>Input candidate profiles to obtain immediate placement readiness scores, salary estimates, and improvement tips.</p>
+                <div class="card-footer">
+                    <a href="{{ url_for('prediction') }}" class="btn btn-sm">Test Prediction &rarr;</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">📄</div>
+                <h3>Analytics Reports</h3>
+                <p>Generate comprehensive printable reports summarizing student placement readiness, model accuracy, and datasets.</p>
+                <div class="card-footer">
+                    <a href="{{ url_for('reports') }}" class="btn btn-sm btn-outline">Generate Reports &rarr;</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interactive Workflow Section -->
+    <!-- WHY WRITTEN: Visualizes the end-to-end multi-step data science lifecycle -->
+    <div class="section">
+        <div class="page-header">
+            <h2 class="page-title">Machine Learning Workflow</h2>
+            <p class="page-subtitle">End-to-end data pipeline from raw student records to actionable career intelligence.</p>
+        </div>
+
+        <div class="workflow-box">
+            <div class="flow-container">
+                <div class="flow-step">1. Data Ingestion</div>
+                <div class="flow-arrow">&rarr;</div>
+                <div class="flow-step">2. Preprocessing & Encoding</div>
+                <div class="flow-arrow">&rarr;</div>
+                <div class="flow-step">3. Feature Scaling</div>
+                <div class="flow-arrow">&rarr;</div>
+                <div class="flow-step">4. Model Training</div>
+                <div class="flow-arrow">&rarr;</div>
+                <div class="flow-step">5. Inference & Salary Guidance</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

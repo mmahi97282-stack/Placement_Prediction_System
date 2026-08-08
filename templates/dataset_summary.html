@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{#
+====================================================================================================
+TEMPLATE: dataset_summary.html (Descriptive Statistical Summary)
+WHY WRITTEN:
+1. Parametric Health Audit: Renders pandas df.describe() containing count, mean, std deviation,
+   min, 25%, 50% (median), 75%, and max values for all numerical features.
+2. Quick Metric Cards: Spotlights sample size, overall placement rate, average CGPA, and average aptitude.
+3. Safe HTML Injection: Utilizes Jinja2's | safe filter to render the clean Pandas HTML table.
+====================================================================================================
+#}
+
+{% block title %}Dataset Summary - Placement Prediction System{% endblock %}
+
+{% block content %}
+
+<div class="page">
+    <div class="page-header">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+            <div>
+                <h1 class="page-title">Dataset Statistical Summary</h1>
+                <p class="page-subtitle">Descriptive analysis, percentiles, means, standard deviations, and metric distributions.</p>
+            </div>
+            <a href="{{ url_for('dataset') }}" class="btn btn-outline btn-sm">&larr; Back to Dataset Hub</a>
+        </div>
+    </div>
+
+    <!-- Quick Parametric Benchmark Cards -->
+    <!-- WHY WRITTEN: Instant reference metrics before diving into the multi-attribute statistical matrix -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-label">Total Sample Size</div>
+            <div class="stat-value">{{ stats.total_students }}</div>
+        </div>
+        <div class="stat-card stat-accent">
+            <div class="stat-label">Placement Rate</div>
+            <div class="stat-value">{{ stats.placement_percentage }}%</div>
+        </div>
+        <div class="stat-card stat-success">
+            <div class="stat-label">Mean Student CGPA</div>
+            <div class="stat-value">{{ stats.avg_cgpa }}</div>
+        </div>
+        <div class="stat-card stat-warning">
+            <div class="stat-label">Mean Aptitude Score</div>
+            <div class="stat-value">{{ stats.avg_aptitude }}</div>
+        </div>
+    </div>
+
+    <!-- Descriptive Analysis Table -->
+    <!-- WHY WRITTEN: Directly renders pandas describe() HTML matrix -->
+    <div class="section">
+        <h2 class="section-title">Pandas Numerical Description Table</h2>
+        <div class="table-container">
+            {{ describe_table | safe }}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

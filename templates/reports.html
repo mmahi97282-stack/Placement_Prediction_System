@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{#
+====================================================================================================
+TEMPLATE: reports.html (Executive Analytics Reports Catalog)
+WHY WRITTEN:
+1. Accreditation & Governance: Universities require auditable, printable placement records for
+   accreditation bodies (ABET, NBA, NAAC) and academic councils.
+2. 4 Specialized Report Categories:
+   - Student Placement Readiness Report: Individual audit of CGPA, backlogs, projects, and skills.
+   - Prediction & Salary Audit Report: Aggregate distribution of predicted salary packages and confidence tiers.
+   - ML Model Benchmark Report: Formal algorithmic accuracy, precision, recall, and F1 validation matrix.
+   - Dataset & Preprocessing Report: Data integrity audit documenting missingness, encoding, and scaling.
+====================================================================================================
+#}
+
+{% block title %}Reports - Placement Prediction System{% endblock %}
+
+{% block content %}
+
+<div class="page">
+    <div class="page-header">
+        <h1 class="page-title">Placement Analytics Reports Generator</h1>
+        <p class="page-subtitle">Generate, preview, and print official reports for students, placement committees, and accreditation bodies.</p>
+    </div>
+
+    <!-- Report Types Cards -->
+    <!-- WHY WRITTEN: Direct card links to generate custom printable report views in target="_blank" tabs -->
+    <div class="cards" style="margin-bottom: 40px;">
+        <div class="card">
+            <div class="card-icon">👨‍🎓</div>
+            <h3>Student Placement Readiness Report</h3>
+            <p>Generates detailed individual or department-wide candidate readiness audits, including backlog alerts and skill gap recommendations.</p>
+            <div class="card-footer">
+                <a href="{{ url_for('generate_report', report_type='student') }}" target="_blank" class="btn btn-sm">Generate Student Report &rarr;</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-icon">🎯</div>
+            <h3>Prediction & Salary Audit Report</h3>
+            <p>Summarizes model prediction confidence intervals, probability tiers, and estimated package distributions.</p>
+            <div class="card-footer">
+                <a href="{{ url_for('generate_report', report_type='prediction') }}" target="_blank" class="btn btn-sm">Generate Prediction Report &rarr;</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-icon">🤖</div>
+            <h3>ML Model Benchmark Report</h3>
+            <p>Technical evaluation matrix comparing Accuracy, Precision, Recall, and F1-Scores across Random Forest, Logistic Regression, Decision Tree, and KNN.</p>
+            <div class="card-footer">
+                <a href="{{ url_for('generate_report', report_type='model') }}" target="_blank" class="btn btn-sm">Generate Model Report &rarr;</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-icon">📂</div>
+            <h3>Dataset & Preprocessing Report</h3>
+            <p>Comprehensive audit documenting total samples, missing value handling, label encoding schemas, and feature normalization bounds.</p>
+            <div class="card-footer">
+                <a href="{{ url_for('generate_report', report_type='dataset') }}" target="_blank" class="btn btn-sm">Generate Dataset Report &rarr;</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

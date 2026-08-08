@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{#
+====================================================================================================
+TEMPLATE: about.html (System Architecture & Technology Notes)
+WHY WRITTEN:
+1. Architectural Transparency: Explains the theoretical foundations of the machine learning engine,
+   data science methodology, and societal impact on student recruitment outcomes.
+2. Technology Stack Documentation: Details the role of Python 3.10+, Flask, Scikit-Learn, Pandas,
+   NumPy, Chart.js, and CSS design system.
+3. System Pipeline Diagram: Step-by-step workflow tracking candidate profiles from feature transformation
+   to salary estimation.
+====================================================================================================
+#}
+
+{% block title %}About - Placement Prediction System{% endblock %}
+
+{% block content %}
+
+<div class="page">
+    <div class="page-header">
+        <h1 class="page-title">About Placement AI Platform</h1>
+        <p class="page-subtitle">A data-driven machine learning application designed to bridge the gap between academic preparation and campus placement success.</p>
+    </div>
+
+    <!-- Mission & Impact Overview Cards -->
+    <div class="cards" style="margin-bottom: 40px;">
+        <div class="card">
+            <h3>🎓 Project Mission</h3>
+            <p>Empower educational institutions and students with artificial intelligence insights to maximize recruitment success, identify skill deficiencies early, and tailor individual career guidance.</p>
+        </div>
+
+        <div class="card">
+            <h3>🔬 Predictive Science</h3>
+            <p>Utilizes multi-parameter supervised machine learning classification algorithms trained on thousands of student academic histories, technical project counts, aptitude tests, and interview scores.</p>
+        </div>
+
+        <div class="card">
+            <h3>🚀 Career Growth Impact</h3>
+            <p>Provides actionable recommendations for students—highlighting specific areas like backlog clearance, aptitude practice, or internship requirements to move into higher salary tiers.</p>
+        </div>
+    </div>
+
+    <!-- Tech Stack Grid -->
+    <!-- WHY WRITTEN: Showcases the decoupled, maintainable software stack powering the platform -->
+    <div class="section">
+        <h2 class="section-title">Technology Architecture</h2>
+        <div class="cards">
+            <div class="card">
+                <div class="card-icon">🐍</div>
+                <h3>Python Core</h3>
+                <p>High-performance backend engine utilizing Pandas, NumPy, and Scikit-Learn for data processing and model inference.</p>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🌶️</div>
+                <h3>Flask Web Framework</h3>
+                <p>Lightweight WSGI application web framework facilitating rapid routing, RESTful interaction, and dynamic template rendering.</p>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">📊</div>
+                <h3>Chart.js Analytics</h3>
+                <p>Interactive HTML5 Canvas visualization charts delivering dynamic graphical insight into campus placement metrics.</p>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🎨</div>
+                <h3>Modern Design System</h3>
+                <p>Responsive CSS design system featuring custom dark/light color schemes, micro-animations, and glassmorphism elements.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Workflow Flowchart -->
+    <!-- WHY WRITTEN: Visual step-by-step lifecycle from raw student credentials to actionable career advice -->
+    <div class="section">
+        <h2 class="section-title">System Workflow</h2>
+        <div class="workflow-box">
+            <div class="flow-container">
+                <div class="flow-step">Student Input Attributes</div>
+                <div class="flow-arrow">&rarr;</div>
+                <div class="flow-step">Label & Scaler Transformation</div>
+                <div class="flow-arrow">&rarr;</div>
+                <div class="flow-step">Random Forest Classifier</div>
+                <div class="flow-arrow">&rarr;</div>
+                <div class="flow-step">Probability & Salary Tier Output</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{#
+====================================================================================================
+TEMPLATE: preprocessing.html (Data Preprocessing & Feature Engineering Guide)
+WHY WRITTEN:
+1. Feature Transformation Documentation: Explains why raw tabular data cannot be fed directly to ML models
+   without imputation, categorical encoding, and feature scaling.
+2. 4-Stage Preprocessing Pipeline:
+   - 1. Missing Value Imputation: Median for continuous interval metrics; Mode for nominal categories.
+   - 2. Categorical Encoding: Maps nominal departments (CSE, ECE, EEE, Mech, Civil) and binary internships (Yes, No) to integer labels.
+   - 3. Feature Standardization (Z-score $Z=(X-\mu)/\sigma$): Guarantees gradient-based and distance-based algorithms (KNN, Logistic Regression) are not dominated by larger-magnitude columns (like AptitudeScore vs CGPA).
+   - 4. Target Segregation: Isolates ground-truth outcome `PlacementStatus` for 80/20 train/test splits.
+3. Transformed Schema Matrix: Clear reference table showing original feature ranges vs preprocessed output schemas.
+====================================================================================================
+#}
+
+{% block title %}Preprocessing - Placement Prediction System{% endblock %}
+
+{% block content %}
+
+<div class="page">
+    <div class="page-header">
+        <h1 class="page-title">Data Preprocessing & Feature Engineering</h1>
+        <p class="page-subtitle">Configure missing value imputation, categorical encoding strategies, and numerical feature scaling before model training.</p>
+    </div>
+
+    <!-- Active Dataset Status Banner -->
+    <!-- WHY WRITTEN: Confirms active data health metrics and clean record counts before training starts -->
+    <div class="alert alert-info">
+        <span>⚡</span> Current Dataset Status: <strong>{{ stats.total_students }} Records Loaded</strong> • {{ stats.missing_values }} Null Values Cleaned • {{ stats.duplicate_records }} Duplicates Removed.
+    </div>
+
+    <!-- Preprocessing Pipeline Cards -->
+    <!-- WHY WRITTEN: Highlights the 4 distinct modular transformation stages implemented across src/ -->
+    <div class="cards" style="margin-bottom: 40px;">
+        <div class="card">
+            <div class="card-icon">🧼</div>
+            <h3>1. Missing Value Imputation</h3>
+            <p>Fills null numerical features with median statistics and replaces categorical missing cells with modal values to avoid biased estimates.</p>
+            <div class="card-footer">
+                <span class="tech-tag">Median / Mode Imputation</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-icon">🏷️</div>
+            <h3>2. Categorical Encoding</h3>
+            <p>Transforms non-numeric features like Department (CSE, ECE, EEE, Mechanical, Civil) and Internship (Yes/No) into machine-readable numeric labels.</p>
+            <div class="card-footer">
+                <span class="tech-tag">Label & One-Hot Encoding</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-icon">⚖️</div>
+            <h3>3. Feature Standardization</h3>
+            <p>Applies Scikit-Learn StandardScaler to align CGPA, 10th %, 12th %, and Aptitude Scores around zero mean and unit variance.</p>
+            <div class="card-footer">
+                <span class="tech-tag">StandardScaler (Z-Score)</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-icon">🎯</div>
+            <h3>4. Target Separation</h3>
+            <p>Isolates target variable <code>PlacementStatus</code> from feature predictors to build 80/20 train-test stratification splits.</p>
+            <div class="card-footer">
+                <span class="tech-tag">Stratified K-Fold Split</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feature Scaling & Encoding Comparison Table -->
+    <!-- WHY WRITTEN: Detailed schema audit table mapping input attributes to transformed numerical matrices -->
+    <div class="section">
+        <h2 class="section-title">Feature Engineering Comparison Matrix</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature Name</th>
+                        <th>Data Type</th>
+                        <th>Preprocessing Step</th>
+                        <th>Original Range</th>
+                        <th>Transformed Schema</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Department</strong></td>
+                        <td>Categorical String</td>
+                        <td>Label Encoding</td>
+                        <td>CSE, ECE, EEE, Mech, Civil</td>
+                        <td>Encoded Array [0 - 4]</td>
+                    </tr>
+                    <tr>
+                        <td><strong>CGPA</strong></td>
+                        <td>Float64</td>
+                        <td>StandardScaler</td>
+                        <td>0.0 - 10.0</td>
+                        <td>Scaled Range [-2.5, +2.5]</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Internship</strong></td>
+                        <td>Binary String</td>
+                        <td>Label Encoding</td>
+                        <td>Yes, No</td>
+                        <td>Binary [1, 0]</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Backlogs</strong></td>
+                        <td>Integer</td>
+                        <td>Pass-through / Standardize</td>
+                        <td>0 - 5+ Count</td>
+                        <td>Scaled Numeric</td>
+                    </tr>
+                    <tr>
+                        <td><strong>AptitudeScore</strong></td>
+                        <td>Float64</td>
+                        <td>StandardScaler</td>
+                        <td>0 - 100 Marks</td>
+                        <td>Normalized Standard Units</td>
+                    </tr>
+                    <tr>
+                        <td><strong>PlacementStatus</strong></td>
+                        <td>Target Label</td>
+                        <td>Binary Output</td>
+                        <td>Placed, Not Placed</td>
+                        <td>Class Label [1, 0]</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

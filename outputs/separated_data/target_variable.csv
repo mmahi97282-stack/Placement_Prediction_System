@@ -1,0 +1,14 @@
++-----------+-----------------+
+| StudentID | PlacementStatus |
++-----------+-----------------+
+| 1         | Placed          |
+| 2         | Not Placed      |
+| 3         | Placed          |
+| 4         | Not Placed      |
+| 5         | Placed          |
+| 6         | Placed          |
+| 7         | Not Placed      |
+| 8         | Placed          |
+| 9         | Not Placed      |
+| 10        | Placed          |
++-----------+-----------------+

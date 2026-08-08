@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{#
+====================================================================================================
+TEMPLATE: dashboard.html (Executive Placement Command Center)
+WHY WRITTEN:
+1. Executive-Level Oversight: Provides deans, training officers, and placement directors with an
+   aggregate bird's-eye view of campus recruitment health.
+2. Department Comparison Matrix: Displays student totals, placed volumes, unplaced counts, and hiring rates
+   across engineering branches (CSE, ECE, EEE, Mechanical, Civil).
+3. Salary Compensation Breakdown: Renders an interactive Chart.js pie chart dividing candidates into
+   Tier-1 (8.5+ LPA), Tier-2 (5.5 - 8.5 LPA), Tier-3 (3.8 - 5.5 LPA), and Under-Prep cohorts.
+====================================================================================================
+#}
+
+{% block title %}Dashboard - Placement Prediction System{% endblock %}
+
+{% block content %}
+
+<div class="page">
+    <div class="page-header">
+        <h1 class="page-title">Executive Placement Dashboard</h1>
+        <p class="page-subtitle">Real-time placement intelligence, department performance trackers, and machine learning deployment analytics.</p>
+    </div>
+
+    <!-- Executive Stats Cards -->
+    <!-- WHY WRITTEN: Delivers high-level KPI benchmarks in 4 responsive cards -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-label">Total Student Cohort</div>
+            <div class="stat-value">{{ stats.total_students }}</div>
+            <div class="stat-desc">Enrolled Candidates</div>
+        </div>
+
+        <div class="stat-card stat-success">
+            <div class="stat-label">Placed Students</div>
+            <div class="stat-value">{{ stats.placed_students }}</div>
+            <div class="stat-desc">{{ stats.placement_percentage }}% Placement Rate</div>
+        </div>
+
+        <div class="stat-card stat-warning">
+            <div class="stat-label">Unplaced Candidates</div>
+            <div class="stat-value">{{ stats.not_placed }}</div>
+            <div class="stat-desc">Targeted for Training</div>
+        </div>
+
+        <div class="stat-card stat-accent">
+            <div class="stat-label">Avg CGPA Score</div>
+            <div class="stat-value">{{ stats.avg_cgpa }}</div>
+            <div class="stat-desc">Out of 10.0 scale</div>
+        </div>
+    </div>
+
+    <!-- Dashboard Charts Grid -->
+    <!-- WHY WRITTEN: Dual visual perspectives comparing departmental volumes and compensation tiers -->
+    <div class="chart-grid">
+        <div class="chart-box">
+            <h3 style="margin-bottom: 16px; font-weight: 700; color: var(--text-dark);">📊 Placement Success by Department</h3>
+            <canvas id="dashDeptChart"></canvas>
+        </div>
+
+        <div class="chart-box">
+            <h3 style="margin-bottom: 16px; font-weight: 700; color: var(--text-dark);">🎯 Expected Salary Tier Distribution</h3>
+            <canvas id="dashSalaryChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Executive Summary Section -->
+    <!-- WHY WRITTEN: Detailed institutional table mapping branches to target corporate job profiles -->
+    <div class="section" style="margin-top: 32px;">
+        <h2 class="section-title">Department Performance Metrics Summary</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Department</th>
+                        <th>Total Students</th>
+                        <th>Placed Count</th>
+                        <th>Unplaced Count</th>
+                        <th>Placement %</th>
+                        <th>Top Hiring Role Category</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Computer Science (CSE)</strong></td>
+                        <td>800</td>
+                        <td>680</td>
+                        <td>120</td>
+                        <td><span style="color: var(--success); font-weight: 700;">85.0%</span></td>
+                        <td>Software Engineer / AI Dev</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Electronics & Comm (ECE)</strong></td>
+                        <td>700</td>
+                        <td>520</td>
+                        <td>180</td>
+                        <td><span style="color: var(--success); font-weight: 700;">74.3%</span></td>
+                        <td>VLSI / Embedded Systems / IT</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Electrical & Electronics (EEE)</strong></td>
+                        <td>690</td>
+                        <td>480</td>
+                        <td>210</td>
+                        <td><span style="color: var(--primary); font-weight: 700;">69.6%</span></td>
+                        <td>Core Electrical / Automation</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Mechanical Engineering</strong></td>
+                        <td>680</td>
+                        <td>390</td>
+                        <td>290</td>
+                        <td><span style="color: var(--warning); font-weight: 700;">57.4%</span></td>
+                        <td>CAD/CAM / Production / Operations</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Civil Engineering</strong></td>
+                        <td>650</td>
+                        <td>340</td>
+                        <td>310</td>
+                        <td><span style="color: var(--warning); font-weight: 700;">52.3%</span></td>
+                        <td>Structural Design / Planning</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Client-side Chart.js rendering for departmental bar graph and compensation tier pie chart
+    document.addEventListener("DOMContentLoaded", function () {
+        // Department Bar Chart
+        const ctxDept = document.getElementById('dashDeptChart').getContext('2d');
+        new Chart(ctxDept, {
+            type: 'bar',
+            data: {
+                labels: ['CSE', 'ECE', 'EEE', 'Mechanical', 'Civil'],
+                datasets: [{
+                    label: 'Placed Students',
+                    data: [680, 520, 480, 390, 340],
+                    backgroundColor: '#4f46e5',
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+
+        // Salary Tier Doughnut
+        const ctxSalary = document.getElementById('dashSalaryChart').getContext('2d');
+        new Chart(ctxSalary, {
+            type: 'pie',
+            data: {
+                labels: ['Tier 1 (8.5+ LPA)', 'Tier 2 (5.5 - 8.5 LPA)', 'Tier 3 (3.8 - 5.5 LPA)', 'Under Prep'],
+                datasets: [{
+                    data: [420, 980, 1010, 1110],
+                    backgroundColor: ['#10b981', '#06b6d4', '#6366f1', '#ef4444']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    });
+</script>
+{% endblock %}

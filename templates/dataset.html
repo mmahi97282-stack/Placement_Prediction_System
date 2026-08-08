@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{#
+====================================================================================================
+TEMPLATE: dataset.html (Dataset Explorer & Ingestion Portal)
+WHY WRITTEN:
+1. Data Transparency: Allows students, educators, and administrators to inspect raw cohort features
+   (CGPA, 10th%, 12th%, Backlogs, Projects, Aptitude, Communication) directly in their browser.
+2. Real-Time Data Health: Displays live stats cards for total student count, feature dimensions, null count,
+   and duplicate records.
+3. Ingestion Management: Houses the multipart form upload endpoint enabling upload of custom CSV datasets,
+   triggering automated pipeline retraining.
+4. Color-Coded Status Highlights: Renders badges for 'Placed' (green) vs 'Not Placed' (red) for fast visual auditing.
+====================================================================================================
+#}
+
+{% block title %}Dataset - Placement Prediction System{% endblock %}
+
+{% block content %}
+
+<div class="page">
+    <div class="page-header">
+        <h1 class="page-title">Placement Dataset Explorer</h1>
+        <p class="page-subtitle">Inspect the student training dataset, upload custom datasets, evaluate missing values, and check duplicate records.</p>
+    </div>
+
+    <!-- Flash Message Notification Container -->
+    <!-- WHY WRITTEN: Renders feedback after CSV file uploads or retraining events -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">
+            <span>ℹ️</span> {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <!-- Dataset Statistics Grid -->
+    <!-- WHY WRITTEN: Instant overview of row counts, feature dimensions, missingness, and duplicates -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-label">Total Student Records</div>
+            <div class="stat-value">{{ stats.total_students }}</div>
+            <div class="stat-desc">Rows in dataset</div>
+        </div>
+
+        <div class="stat-card stat-accent">
+            <div class="stat-label">Total Attributes</div>
+            <div class="stat-value">{{ stats.total_features }}</div>
+            <div class="stat-desc">Columns / features</div>
+        </div>
+
+        <div class="stat-card stat-warning">
+            <div class="stat-label">Missing Values</div>
+            <div class="stat-value">{{ stats.missing_values }}</div>
+            <div class="stat-desc">Total null cells</div>
+        </div>
+
+        <div class="stat-card stat-success">
+            <div class="stat-label">Duplicate Rows</div>
+            <div class="stat-value">{{ stats.duplicate_records }}</div>
+            <div class="stat-desc">Identical records found</div>
+        </div>
+    </div>
+
+    <!-- Dataset Actions Bar -->
+    <!-- WHY WRITTEN: Direct action toolbar for pagination, summary stats, subset downloads, and file uploads -->
+    <div class="form-container" style="max-width: 100%; margin-bottom: 32px;">
+        <h3 style="margin-bottom: 16px;">Dataset Management Actions</h3>
+        <div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: center;">
+            <a href="{{ url_for('view_dataset') }}" class="btn">
+                📄 View Paginated Records
+            </a>
+            <a href="{{ url_for('dataset_summary') }}" class="btn btn-outline">
+                📊 Descriptive Statistics
+            </a>
+            <a href="{{ url_for('separated_datasets') }}" class="btn btn-primary">
+                📂 Separated Subsets (Numerical, Categorical, Target, X/y)
+            </a>
+            
+            <form action="{{ url_for('upload_dataset') }}" method="POST" enctype="multipart/form-data" style="margin: 0; display: inline-flex; gap: 10px; align-items: center;">
+                <input type="file" name="file" accept=".csv" class="form-control" style="max-width: 250px; padding: 6px 12px; font-size: 13px;" required>
+                <button type="submit" class="btn btn-secondary btn-sm">Upload New CSV</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Sample Data Table Preview -->
+    <!-- WHY WRITTEN: Live HTML table rendering first 15 records with sticky styled headers and responsive scroll -->
+    <div class="section">
+        <h2 class="section-title">Sample Dataset Records (First 15 Students)</h2>
+        {% if sample_data %}
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        {% for col in columns %}
+                        <th>{{ col }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in sample_data %}
+                    <tr>
+                        {% for col in columns %}
+                        <td>
+                            {% if col == 'PlacementStatus' %}
+                                {% if row[col] == 'Placed' %}
+                                    <span style="color: var(--success); font-weight: 700; background: var(--success-bg); padding: 3px 8px; border-radius: 12px;">Placed</span>
+                                {% else %}
+                                    <span style="color: var(--danger); font-weight: 700; background: var(--danger-bg); padding: 3px 8px; border-radius: 12px;">Not Placed</span>
+                                {% endif %}
+                            {% else %}
+                                {{ row[col] }}
+                            {% endif %}
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-info">No dataset records loaded. Upload a dataset file to inspect records.</div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

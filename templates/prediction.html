@@ -1,0 +1,260 @@
+{% extends "base.html" %}
+
+{#
+====================================================================================================
+TEMPLATE: prediction.html (Live Student Inference & Career Intelligence Portal)
+WHY WRITTEN:
+1. User-Facing Prediction Form: Collects individual student academic records (CGPA, 10th%, 12th%, Backlogs)
+   and skill evaluations (Internship, Technical Projects, Aptitude, Communication).
+2. Quick Demo Presets (fillPreset JavaScript): Provides one-click profile loaders ('Top Tier', 'Average', 'Needs Improvement')
+   enabling recruiters, interviewers, and professors to quickly demonstrate model sensitivity.
+3. Intelligent Outcome Card:
+   - Placement Status Badge: Placed (Green) vs Needs Preparation (Red).
+   - Placement Probability Meter: Visual animated progress bar reflecting classifier confidence ($P(\text{Placed})$).
+   - Estimated Compensation Tier: Expected CTC bracket (e.g. 8.5 - 14.0 LPA for Tier-1 offers).
+   - Dynamic Strengths & Recommendations: Rule-and-ML-backed personalized advice for student upskilling.
+4. Auto-Scroll Interaction: Automatically scrolls the user smoothly to the prediction output upon form submission.
+====================================================================================================
+#}
+
+{% block title %}Prediction - Placement Prediction System{% endblock %}
+
+{% block content %}
+
+<div class="page">
+    <div class="page-header">
+        <h1 class="page-title">Candidate Placement Prediction</h1>
+        <p class="page-subtitle">Input student academic credentials, technical skills, and interview performance to compute real-time placement probability and career recommendations.</p>
+    </div>
+
+    <!-- Flash Alerts Container -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">
+            <span>⚠️</span> {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <div class="form-container">
+        <!-- Preset Sample Profile Fill Buttons -->
+        <!-- WHY WRITTEN: Facilitates instantaneous evaluation without requiring manual typing of 10 fields -->
+        <div style="margin-bottom: 20px;">
+            <label style="font-size: 13px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 8px;">⚡ QUICK PRESET SAMPLE PROFILES:</label>
+            <div class="preset-buttons">
+                <button type="button" class="preset-btn" onclick="fillPreset('high')">🌟 Top Tier Candidate</button>
+                <button type="button" class="preset-btn" onclick="fillPreset('avg')">📈 Average Candidate</button>
+                <button type="button" class="preset-btn" onclick="fillPreset('low')">⚠️ Needs Improvement Profile</button>
+            </div>
+        </div>
+
+        <!-- Primary Inference Form -->
+        <form method="POST" action="{{ url_for('prediction') }}">
+            <div class="form-grid">
+                <!-- Student ID -->
+                <div class="form-group">
+                    <label for="student_id">Student ID / Roll No</label>
+                    <input type="text" id="student_id" name="student_id" class="form-control" value="{{ inputs.get('student_id', 'STU-2026') }}" required>
+                </div>
+
+                <!-- Department -->
+                <div class="form-group">
+                    <label for="department">Department / Branch</label>
+                    <select id="department" name="department" class="form-control" required>
+                        <option value="CSE" {% if inputs.get('department') == 'CSE' %}selected{% endif %}>Computer Science Engineering (CSE)</option>
+                        <option value="ECE" {% if inputs.get('department') == 'ECE' %}selected{% endif %}>Electronics & Comm (ECE)</option>
+                        <option value="EEE" {% if inputs.get('department') == 'EEE' %}selected{% endif %}>Electrical & Electronics (EEE)</option>
+                        <option value="Mechanical" {% if inputs.get('department') == 'Mechanical' %}selected{% endif %}>Mechanical Engineering</option>
+                        <option value="Civil" {% if inputs.get('department') == 'Civil' %}selected{% endif %}>Civil Engineering</option>
+                    </select>
+                </div>
+
+                <!-- CGPA -->
+                <div class="form-group">
+                    <label for="cgpa">Current CGPA <span>(0.0 - 10.0)</span></label>
+                    <input type="number" step="0.01" min="0" max="10" id="cgpa" name="cgpa" class="form-control" value="{{ inputs.get('cgpa', 8.2) }}" required>
+                </div>
+
+                <!-- 10th Percentage -->
+                <div class="form-group">
+                    <label for="tenth_pct">10th Grade Percentage <span>(0 - 100%)</span></label>
+                    <input type="number" step="0.1" min="0" max="100" id="tenth_pct" name="tenth_pct" class="form-control" value="{{ inputs.get('tenth_pct', 85.0) }}" required>
+                </div>
+
+                <!-- 12th Percentage -->
+                <div class="form-group">
+                    <label for="twelfth_pct">12th Grade Percentage <span>(0 - 100%)</span></label>
+                    <input type="number" step="0.1" min="0" max="100" id="twelfth_pct" name="twelfth_pct" class="form-control" value="{{ inputs.get('twelfth_pct', 82.0) }}" required>
+                </div>
+
+                <!-- Active Backlogs -->
+                <div class="form-group">
+                    <label for="backlogs">Active Academic Backlogs</label>
+                    <input type="number" min="0" max="10" id="backlogs" name="backlogs" class="form-control" value="{{ inputs.get('backlogs', 0) }}" required>
+                </div>
+
+                <!-- Internship -->
+                <div class="form-group">
+                    <label for="internship">Completed Internship?</label>
+                    <select id="internship" name="internship" class="form-control" required>
+                        <option value="Yes" {% if inputs.get('internship') == 'Yes' or not inputs %}selected{% endif %}>Yes - Industry Internship Done</option>
+                        <option value="No" {% if inputs.get('internship') == 'No' %}selected{% endif %}>No - No Internship</option>
+                    </select>
+                </div>
+
+                <!-- Projects Count -->
+                <div class="form-group">
+                    <label for="projects">Major Technical Projects Count</label>
+                    <input type="number" min="0" max="10" id="projects" name="projects" class="form-control" value="{{ inputs.get('projects', 3) }}" required>
+                </div>
+
+                <!-- Aptitude Score -->
+                <div class="form-group">
+                    <label for="aptitude_score">Aptitude Test Score <span>(0 - 100)</span></label>
+                    <input type="number" step="0.1" min="0" max="100" id="aptitude_score" name="aptitude_score" class="form-control" value="{{ inputs.get('aptitude_score', 78.0) }}" required>
+                </div>
+
+                <!-- Communication Score -->
+                <div class="form-group">
+                    <label for="communication_score">Communication Skill Score <span>(0 - 100)</span></label>
+                    <input type="number" step="0.1" min="0" max="100" id="communication_score" name="communication_score" class="form-control" value="{{ inputs.get('communication_score', 80.0) }}" required>
+                </div>
+            </div>
+
+            <div style="margin-top: 24px; text-align: center;">
+                <button type="submit" class="btn btn-lg" style="width: 100%; max-width: 400px;">
+                    🎯 Run Machine Learning Prediction
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Prediction Output Results Display Card -->
+    <!-- WHY WRITTEN: Appears conditionally after form POST request delivers machine learning inference results -->
+    {% if result %}
+    <div id="prediction-result-card" class="result-card">
+        <div class="result-header">
+            <div>
+                <span style="font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">Prediction Result Output</span>
+                <h2 style="font-size: 26px; font-weight: 800; color: var(--text-dark); margin-top: 4px;">
+                    Candidate ID: {{ result.inputs.student_id }} ({{ result.inputs.department }})
+                </h2>
+            </div>
+            <div>
+                {% if 'placed' in result.status.lower() and 'not' not in result.status.lower() %}
+                    <span class="status-badge placed">🎉 PLACED PREDICTION</span>
+                {% else %}
+                    <span class="status-badge not-placed">⚠️ NEEDS PREPARATION</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Metrics Cards -->
+        <div class="stats-grid" style="margin-bottom: 24px;">
+            <div class="stat-card">
+                <div class="stat-label">Placement Probability</div>
+                <div class="stat-value" style="color: var(--primary);">{{ result.probability }}%</div>
+                <div class="stat-desc">Confidence score</div>
+            </div>
+
+            <div class="stat-card stat-accent">
+                <div class="stat-label">Expected Salary Range</div>
+                <div class="stat-value" style="font-size: 24px;">{{ result.salary }}</div>
+                <div class="stat-desc">{{ result.tier }}</div>
+            </div>
+
+            <div class="stat-card stat-success">
+                <div class="stat-label">CGPA Rating</div>
+                <div class="stat-value">{{ result.inputs.cgpa }}</div>
+                <div class="stat-desc">Academic score</div>
+            </div>
+        </div>
+
+        <!-- Probability Meter Bar -->
+        <div class="probability-bar-container">
+            <div class="probability-label">
+                <span>Placement Success Chance</span>
+                <span>{{ result.probability }}%</span>
+            </div>
+            <div class="probability-track">
+                <div class="probability-fill" style="width: {{ result.probability }}%;"></div>
+            </div>
+        </div>
+
+        <!-- Strengths & Recommendations Grid -->
+        <div class="cards" style="margin-top: 24px;">
+            <div class="card" style="border-left: 4px solid var(--success);">
+                <h3 style="color: var(--success);">✅ Key Strengths</h3>
+                <ul style="padding-left: 20px; color: var(--text-dark); line-height: 1.8;">
+                    {% for item in result.strengths %}
+                    <li>{{ item }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="card" style="border-left: 4px solid var(--warning);">
+                <h3 style="color: var(--warning);">💡 Actionable Recommendations</h3>
+                <ul style="padding-left: 20px; color: var(--text-dark); line-height: 1.8;">
+                    {% for item in result.recommendations %}
+                    <li>{{ item }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Preset Population Helper: Automatically populates sample attributes to test varying student archetypes
+    function fillPreset(type) {
+        if (type === 'high') {
+            document.getElementById('student_id').value = 'STU-9001';
+            document.getElementById('department').value = 'CSE';
+            document.getElementById('cgpa').value = 9.1;
+            document.getElementById('tenth_pct').value = 92;
+            document.getElementById('twelfth_pct').value = 90;
+            document.getElementById('backlogs').value = 0;
+            document.getElementById('internship').value = 'Yes';
+            document.getElementById('projects').value = 4;
+            document.getElementById('aptitude_score').value = 88;
+            document.getElementById('communication_score').value = 90;
+        } else if (type === 'avg') {
+            document.getElementById('student_id').value = 'STU-5002';
+            document.getElementById('department').value = 'ECE';
+            document.getElementById('cgpa').value = 7.4;
+            document.getElementById('tenth_pct').value = 76;
+            document.getElementById('twelfth_pct').value = 74;
+            document.getElementById('backlogs').value = 0;
+            document.getElementById('internship').value = 'Yes';
+            document.getElementById('projects').value = 2;
+            document.getElementById('aptitude_score').value = 72;
+            document.getElementById('communication_score').value = 70;
+        } else if (type === 'low') {
+            document.getElementById('student_id').value = 'STU-1003';
+            document.getElementById('department').value = 'Mechanical';
+            document.getElementById('cgpa').value = 5.8;
+            document.getElementById('tenth_pct').value = 62;
+            document.getElementById('twelfth_pct').value = 59;
+            document.getElementById('backlogs').value = 2;
+            document.getElementById('internship').value = 'No';
+            document.getElementById('projects').value = 1;
+            document.getElementById('aptitude_score').value = 48;
+            document.getElementById('communication_score').value = 52;
+        }
+    }
+
+    // Auto Smooth-Scroll to prediction results on completion
+    document.addEventListener("DOMContentLoaded", function() {
+        const resultCard = document.getElementById("prediction-result-card");
+        if (resultCard) {
+            resultCard.scrollIntoView({ behavior: 'smooth' });
+        }
+    });
+</script>
+{% endblock %}

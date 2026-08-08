@@ -1,0 +1,14 @@
++-----------+------------+------------+-----------------+
+| StudentID | Department | Internship | PlacementStatus |
++-----------+------------+------------+-----------------+
+| 1         | CSE        | Yes        | Placed          |
+| 2         | ECE        | No         | Not Placed      |
+| 3         | EEE        | Yes        | Placed          |
+| 4         | Mechanical | No         | Not Placed      |
+| 5         | Civil      | Yes        | Placed          |
+| 6         | CSE        | Yes        | Placed          |
+| 7         | ECE        | No         | Not Placed      |
+| 8         | EEE        | Yes        | Placed          |
+| 9         | Mechanical | No         | Not Placed      |
+| 10        | Civil      | Yes        | Placed          |
++-----------+------------+------------+-----------------+

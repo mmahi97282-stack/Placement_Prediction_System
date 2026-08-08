@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{#
+====================================================================================================
+TEMPLATE: view_dataset.html (Paginated Full Dataset Browser)
+WHY WRITTEN:
+1. High-Performance Pagination: Prevents DOM rendering lag by chunking large multi-thousand-row
+   datasets into 20 records per page using Python slicing (start:end).
+2. Navigation Controls: Provides Previous and Next pagination buttons updating the ?page= URL parameter.
+3. Status Badge Encoding: Dynamically colors 'Placed' vs 'Not Placed' text cells.
+====================================================================================================
+#}
+
+{% block title %}View Dataset - Placement Prediction System{% endblock %}
+
+{% block content %}
+
+<div class="page">
+    <div class="page-header">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+            <div>
+                <h1 class="page-title">Dataset Tabular View</h1>
+                <p class="page-subtitle">Showing {{ total_records }} student placement dataset entries (Page {{ page }} of {{ total_pages }}).</p>
+            </div>
+            <a href="{{ url_for('dataset') }}" class="btn btn-outline btn-sm">&larr; Back to Dataset Hub</a>
+        </div>
+    </div>
+
+    <!-- Paginated Data Table -->
+    <!-- WHY WRITTEN: Displays current page slice with sticky header and horizontal scroll responsiveness -->
+    {% if records %}
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    {% for col in columns %}
+                    <th>{{ col }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in records %}
+                <tr>
+                    {% for col in columns %}
+                    <td>
+                        {% if col == 'PlacementStatus' %}
+                            {% if row[col] == 'Placed' %}
+                                <span style="color: var(--success); font-weight: 700; background: var(--success-bg); padding: 3px 8px; border-radius: 12px;">Placed</span>
+                            {% else %}
+                                <span style="color: var(--danger); font-weight: 700; background: var(--danger-bg); padding: 3px 8px; border-radius: 12px;">Not Placed</span>
+                            {% endif %}
+                        {% else %}
+                            {{ row[col] }}
+                        {% endif %}
+                    </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination Controls -->
+    <!-- WHY WRITTEN: Seamless page stepping with boundary protection (page 1 to total_pages) -->
+    <div style="display: flex; justify-content: center; gap: 10px; margin-top: 24px;">
+        {% if page > 1 %}
+        <a href="{{ url_for('view_dataset', page=page-1) }}" class="btn btn-sm btn-outline">&laquo; Previous</a>
+        {% endif %}
+        
+        <span style="display: flex; align-items: center; font-size: 14px; font-weight: 600; padding: 0 12px;">
+            Page {{ page }} / {{ total_pages }}
+        </span>
+
+        {% if page < total_pages %}
+        <a href="{{ url_for('view_dataset', page=page+1) }}" class="btn btn-sm btn-outline">Next &raquo;</a>
+        {% endif %}
+    </div>
+
+    {% else %}
+    <div class="alert alert-info">No records found.</div>
+    {% endif %}
+</div>
+
+{% endblock %}
