@@ -1,13 +1,15 @@
 {#
 ====================================================================================================
-TEMPLATE: base.html (Animated Master Application Layout)
+TEMPLATE: base.html (Master Application Layout)
 WHY WRITTEN:
-1. Ambient Interactive Particle Canvas: Renders a lightweight HTML5 canvas with glowing floating nodes
-   and connected constellation lines drifting smoothly across the background.
-2. Animated Sidebar & Navigation: Features glowing neon indicator pulses, hover micro-bounces,
-   and dynamic gradient active badges.
-3. Universal Resource Imports: Imports Plus Jakarta Sans, Chart.js CDN, and centralized style.css.
-4. Global Animation Engine: Powers page cascade transitions, button ripple bursts, and 3D card tilt.
+1. DRY Principle (Don't Repeat Yourself): Serves as the global master template inherited by all child
+   views via Jinja2 template inheritance.
+2. Responsive Two-Column Grid: Houses the persistent fixed-left sidebar navigation and main scrollable
+   content viewport, ensuring seamless desktop & tablet navigation.
+3. Universal Resource Imports: Imports Google Font 'Plus Jakarta Sans', Chart.js CDN for client-side
+   canvas rendering, and the centralized style.css stylesheet.
+4. Dynamic Route Highlighting: Uses request.endpoint conditional checks to highlight the active navigation item.
+5. Standardized Breadcrumb & Footer: Provides consistent page header breadcrumbs and system status badges.
 ====================================================================================================
 #}
 <!DOCTYPE html>
@@ -23,12 +25,12 @@ WHY WRITTEN:
         {% endblock %}
     </title>
 
-    <!-- Google Fonts: Plus Jakarta Sans with font-display swap for instant rendering -->
+    <!-- Google Fonts: Plus Jakarta Sans for crisp, modern typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Chart.js CDN: Enables reactive canvas visualizations with 3D and easing animations -->
+    <!-- Chart.js CDN: Enables reactive canvas visualizations for department and CGPA distribution charts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!-- Global Application Stylesheet -->
@@ -37,15 +39,13 @@ WHY WRITTEN:
 
 <body class="has-sidebar">
 
-    <!-- Ambient Animated Constellation Particle Canvas -->
-    <canvas id="ambient-particles" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 0; opacity: 0.35;"></canvas>
-
     <!-- Left Sidebar Navigation Bar -->
+    <!-- WHY WRITTEN: Provides quick one-click access across all 4 pipeline phases: Overview, Data, Modeling, and Actions -->
     <aside class="sidebar">
-        <!-- Brand Header & Logo with Glowing Icon -->
+        <!-- Brand Header & Logo -->
         <div class="sidebar-header">
             <a href="{{ url_for('home') }}" class="logo">
-                <div class="logo-icon logo-animated">🎓</div>
+                <div class="logo-icon">🎓</div>
                 <div class="logo-text">
                     <span class="brand-name">PlacementAI</span>
                     <span class="brand-sub">Analytics Portal</span>
@@ -63,7 +63,7 @@ WHY WRITTEN:
                 </a>
                 <a href="{{ url_for('dashboard') }}" class="sidebar-link {% if request.endpoint == 'dashboard' %}active{% endif %}">
                     <span class="nav-icon">🎛️</span>
-                    <span class="nav-label">3D Dashboard</span>
+                    <span class="nav-label">Dashboard</span>
                 </a>
                 <a href="{{ url_for('about') }}" class="sidebar-link {% if request.endpoint == 'about' %}active{% endif %}">
                     <span class="nav-icon">ℹ️</span>
@@ -88,7 +88,7 @@ WHY WRITTEN:
                 </a>
                 <a href="{{ url_for('visualization') }}" class="sidebar-link {% if request.endpoint == 'visualization' %}active{% endif %}">
                     <span class="nav-icon">📈</span>
-                    <span class="nav-label">3D Visualization</span>
+                    <span class="nav-label">Visualization</span>
                 </a>
             </nav>
 
@@ -114,11 +114,11 @@ WHY WRITTEN:
             </nav>
         </div>
 
-        <!-- Sidebar System Status Indicator with Pulsing Ring -->
+        <!-- Sidebar System Status Indicator -->
         <div class="sidebar-footer">
             <div class="status-indicator">
-                <span class="status-dot pulse-animated"></span>
-                <span>System Online • 60 FPS</span>
+                <span class="status-dot"></span>
+                <span>System Online • v2.5</span>
             </div>
         </div>
     </aside>
@@ -133,7 +133,7 @@ WHY WRITTEN:
                 <span class="breadcrumb-active">{% block page_name %}Analytics System{% endblock %}</span>
             </div>
             <div class="top-bar-right">
-                <span class="badge-live live-shimmer">⚡ 60 FPS Animation Engine</span>
+                <span class="badge-live">⚡ Active Pipeline</span>
             </div>
         </header>
 
@@ -156,90 +156,6 @@ WHY WRITTEN:
             </div>
         </footer>
     </div>
-
-    <!-- Ambient Constellation Particle Canvas Script & Button Ripple Engine -->
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            // 1. Ambient Background Particle Engine
-            const canvas = document.getElementById("ambient-particles");
-            if (canvas) {
-                const ctx = canvas.getContext("2d");
-                let width = canvas.width = window.innerWidth;
-                let height = canvas.height = window.innerHeight;
-
-                window.addEventListener("resize", () => {
-                    width = canvas.width = window.innerWidth;
-                    height = canvas.height = window.innerHeight;
-                });
-
-                const particles = [];
-                const particleCount = Math.min(Math.floor(width / 35), 45);
-
-                for (let i = 0; i < particleCount; i++) {
-                    particles.push({
-                        x: Math.random() * width,
-                        y: Math.random() * height,
-                        vx: (Math.random() - 0.5) * 0.6,
-                        vy: (Math.random() - 0.5) * 0.6,
-                        radius: Math.random() * 2 + 1,
-                        color: i % 2 === 0 ? "rgba(79, 70, 229, 0.4)" : "rgba(6, 182, 212, 0.4)"
-                    });
-                }
-
-                function drawParticles() {
-                    ctx.clearRect(0, 0, width, height);
-
-                    // Draw connecting lines
-                    for (let i = 0; i < particles.length; i++) {
-                        for (let j = i + 1; j < particles.length; j++) {
-                            const dx = particles[i].x - particles[j].x;
-                            const dy = particles[i].y - particles[j].y;
-                            const dist = Math.sqrt(dx * dx + dy * dy);
-
-                            if (dist < 120) {
-                                ctx.strokeStyle = `rgba(99, 102, 241, ${0.18 * (1 - dist / 120)})`;
-                                ctx.lineWidth = 1;
-                                ctx.beginPath();
-                                ctx.moveTo(particles[i].x, particles[i].y);
-                                ctx.lineTo(particles[j].x, particles[j].y);
-                                ctx.stroke();
-                            }
-                        }
-                    }
-
-                    // Draw glowing dots
-                    particles.forEach(p => {
-                        p.x += p.vx;
-                        p.y += p.vy;
-
-                        if (p.x < 0 || p.x > width) p.vx *= -1;
-                        if (p.y < 0 || p.y > height) p.vy *= -1;
-
-                        ctx.fillStyle = p.color;
-                        ctx.beginPath();
-                        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-                        ctx.fill();
-                    });
-
-                    requestAnimationFrame(drawParticles);
-                }
-                drawParticles();
-            }
-
-            // 2. Interactive Button Click Ripple Wave Effect
-            document.querySelectorAll(".btn, .sidebar-link, .stat-card").forEach(btn => {
-                btn.addEventListener("click", function (e) {
-                    const rect = this.getBoundingClientRect();
-                    const ripple = document.createElement("span");
-                    ripple.className = "click-ripple";
-                    ripple.style.left = `${e.clientX - rect.left}px`;
-                    ripple.style.top = `${e.clientY - rect.top}px`;
-                    this.appendChild(ripple);
-                    setTimeout(() => ripple.remove(), 600);
-                });
-            });
-        });
-    </script>
 
     <!-- Script Injection Block for Page-Specific JavaScript -->
     {% block scripts %}{% endblock %}
